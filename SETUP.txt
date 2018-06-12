@@ -1,0 +1,43 @@
+SETUP.txt - The frameworks for this repository need to be installed and setup
+before the application can be run.  Follow these instructions to get the
+repository ready to go.
+
+==============
+Install Python
+==============
+
+If you don't already have Python 3, make sure it is installed and is at least
+version 3.4.  You can download the latest version at www.python.org.
+
+============================
+Create a virtual environment
+============================
+
+We use a virtual environment so that all packages will be contained in our
+project directory:
+
+    python3 -m venv venv
+
+or on windows...
+
+    py -3 -m venv venv
+
+and then activate the environment:
+
+    . venv/bin/activate
+
+or on windows...
+
+    venv\Scripts\activate
+
+========================
+Install all dependencies
+========================
+
+First, make sure pip is up-to-date:
+
+    pip3 install --upgrade pip
+
+Then use pip3 to install the deqendencies specified in requirements.txt:
+
+    pip3 install -r requirements.txt
