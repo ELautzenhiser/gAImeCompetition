@@ -41,3 +41,25 @@ First, make sure pip is up-to-date:
 Then use pip3 to install the deqendencies specified in requirements.txt:
 
     pip3 install -r requirements.txt
+
+=========
+Run Flask
+=========
+
+First, make sure the environment variables FLASK_APP and FLASK_ENV are set:
+
+Linux/Mac:
+    export FLASK_APP=gaime-competition
+    expost FLASK_ENV=development
+
+Windows:
+    set FLASK_APP=gaime-competition
+    set FLASK_ENV=development
+
+Then, enter the following at the command prompt:
+    flask run
+
+In a browser, visit http://127.0.0.1:5000/hello. If your localhost address is
+different, enter that address instead of 127.0.0.1:5000.
+
+You should see 'Hello, World!'.
