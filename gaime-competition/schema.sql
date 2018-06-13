@@ -55,3 +55,7 @@ CREATE TABLE Friendships (
 	FOREIGN KEY (requester_id) REFERENCES Users (user_id),
 	FOREIGN KEY (responder_id) REFERENCES Users (user_id)
 	);
+	
+INSERT INTO Languages (name) VALUES ('Python 3');
+
+INSERT INTO Games (name, max_num_players) VALUES ('Rock Paper Scissors', 2);
