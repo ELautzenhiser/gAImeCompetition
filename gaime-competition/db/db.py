@@ -44,7 +44,7 @@ def db_close(e=None):
 
 def init_db():
      db = db_connect()
-     statements = parse_sql('schema.sql')
+     statements = parse_sql('db\schema.sql')
      with db.cursor() as cursor:
           for statement in statements:
                cursor.execute(statement)
