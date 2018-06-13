@@ -1,0 +1,4 @@
+include gaime-competition/schema.sql
+graft gaime-competition/static
+graft gaime-competition/templates
+global-exclude *.pyc
