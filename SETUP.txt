@@ -63,3 +63,13 @@ In a browser, visit http://127.0.0.1:5000/hello. If your localhost address is
 different, enter that address instead of 127.0.0.1:5000.
 
 You should see 'Hello, World!'.
+
+======
+EXTRAS
+======
+
+
+If you don't like cd'ing to the top directory in order to run flask, you can
+install this package using the following command:
+
+    pip3 install -e .
