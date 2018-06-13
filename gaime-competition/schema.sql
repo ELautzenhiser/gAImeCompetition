@@ -1,0 +1,9 @@
+CREATE TABLE Users (
+	user_id INT AUTO_INCREMENT NOT NULL,
+	email VARCHAR(30) NOT NULL,
+	password VARCHAR(30) NOT NULL,
+	priveleges SMALLINT NOT NULL DEFAULT 0,
+	fname VARCHAR(30),
+	lname VARCHAR(30),
+	PRIMARY KEY (user_id)
+	);
