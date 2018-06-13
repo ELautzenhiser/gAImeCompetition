@@ -1,7 +1,8 @@
 <!doctype html>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <title>{% block title %}{% endblock %} | gAImes</title>
 <nav>
-     <h1>gAIme Competition</h1>
+     <a class="home-button" href="{{ url_for('index') }}">gAIme Competition</a>
 </nav>
 <section class='content'>
      <header>
