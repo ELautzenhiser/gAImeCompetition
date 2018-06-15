@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS Users;
 CREATE TABLE Users (
 	user_id INT AUTO_INCREMENT NOT NULL,
+        username TEXT UNIQUE NOT NULL,
 	email VARCHAR(30) NOT NULL,
 	password VARCHAR(30) NOT NULL,
 	privileges TINYINT NOT NULL DEFAULT 0,
@@ -20,8 +21,11 @@ DROP TABLE IF EXISTS Games;
 CREATE TABLE Games (
 	game_id INT AUTO_INCREMENT NOT NULL,
 	name VARCHAR(30) NOT NULL,
+        created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	max_num_players INT NOT NULL,
 	default_player INT,
+        author INT NOT NULL,
+        FOREIGN KEY (author_id) REFERENCES Users (user_id),
 	PRIMARY KEY (game_id)
 	);
 
@@ -31,11 +35,11 @@ CREATE TABLE Players (
 	file_location VARCHAR(30),
 	language_id INT NOT NULL,
 	game_id INT NOT NULL,
-	user_id INT NOT NULL,
+	author_id INT NOT NULL,
 	PRIMARY KEY (player_id),
 	FOREIGN KEY (language_id) REFERENCES Languages (language_id),
 	FOREIGN KEY (game_id) REFERENCES Games (game_id),
-	FOREIGN KEY (user_id) REFERENCES Users (user_id)
+	FOREIGN KEY (author_id) REFERENCES Users (user_id)
 	);
 	
 ALTER TABLE Games ADD CONSTRAINT FOREIGN KEY (default_player) REFERENCES Players (player_id);

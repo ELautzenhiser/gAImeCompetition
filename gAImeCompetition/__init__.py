@@ -34,4 +34,7 @@ def create_app(test_config=None):
     def about():
         return render_template('about.html')
 
+    from . import compete
+    app.register_blueprint(compete.bp)
+
     return app

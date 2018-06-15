@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{ block title %}Posts{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  {% for game in games %}
+    <article class="game">
+      <header>
+        <div>
+          <h1>{{ game['name'] }}</h1>
+          <ol>
+            <li>author: {{ game['username'] }}</li>
+            <li>created: {{ game['created'].strftime('%Y-%m-%d }}</li>
+        </div>
+      </header>
+    </article>
+    {% if not loop.last %}
+      <hr>
+    {% endif %}
+  {% endfor %}
+{% endblock %}
+        
