@@ -7,6 +7,7 @@ CREATE TABLE Users (
 	privileges TINYINT NOT NULL DEFAULT 0,
 	fname VARCHAR(30),
 	lname VARCHAR(30),
+	created_dt DATETIME NOT NULL,
 	active enum('A','I') NOT NULL DEFAULT 'A',
 	PRIMARY KEY (user_id)
 	);
@@ -34,6 +35,7 @@ CREATE TABLE Players (
 	language_id INT NOT NULL,
 	game_id INT NOT NULL,
 	user_id INT NOT NULL,
+	created_dt DATETIME NOT NULL,
 	PRIMARY KEY (player_id),
 	FOREIGN KEY (language_id) REFERENCES Languages (language_id),
 	FOREIGN KEY (game_id) REFERENCES Games (game_id),
