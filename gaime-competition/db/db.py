@@ -27,7 +27,7 @@ def parse_sql(filename):
           return statements
                
 
-def db_connect():
+def open_db():
      if 'db' not in g:
           g.db = pymysql.connect(host=sql_vals['host'],
                           port=sql_vals['port'],
@@ -36,20 +36,35 @@ def db_connect():
                           password=sql_vals['password'])
      return g.db
 
-def db_close(e=None):
+def close_db(e=None):
      db = g.pop('db', None)
 
      if db is not None:
           db.close()
 
 def init_db():
-     db = db_connect()
+     db = open_db()
      statements = parse_sql('db\schema.sql')
      with db.cursor() as cursor:
           for statement in statements:
                cursor.execute(statement)
      db.commit()
 
+def query_db(query, fetchone=False):
+     db = open_db()
+     with db.cursor(pymysql.cursors.DictCursor) as cursor:
+          cursor.execute(query)
+     if fetchone:
+          return cursor.fetchone()
+     else:
+          return cursor.fetchall()
+
+def insert_db(insert):
+     db = db.open_db()
+     with db.cursor() as cursor:
+          success = cursor.execute(insert)
+     db.commit()
+     return success
 
 @click.command('init-db')
 @with_appcontext
@@ -58,5 +73,5 @@ def init_db_command():
      click.echo('Initialized the database.')
 
 def init_app(app):
-     app.teardown_appcontext(db_close)
+     app.teardown_appcontext(close_db)
      app.cli.add_command(init_db_command)

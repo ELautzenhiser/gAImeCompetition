@@ -71,3 +71,5 @@ SET foreign_key_checks=1;
 INSERT INTO Languages (name) VALUES ('Python 3');
 
 INSERT INTO Games (name, max_num_players) VALUES ('Rock Paper Scissors', 2);
+
+INSERT INTO Users (email, password, privileges, fname, created_dt, active) VALUES ('admin@gaime.com', 'admin', -1, 'Admin', '2018-06-15 23:59:59', 'A');

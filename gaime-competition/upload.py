@@ -1,6 +1,8 @@
 import os
-from flask import Flask, flash, request, redirect, url_for, render_template
+from flask import Flask, flash, g, request, redirect, url_for, render_template
 from werkzeug.utils import secure_filename
+from datetime import datetime
+from .db import db
 
 UPLOAD_FOLDER = 'gaime-competition/Players'
 ALLOWED_EXTENSIONS = set(['py', 'txt'])
@@ -8,6 +10,27 @@ ALLOWED_EXTENSIONS = set(['py', 'txt'])
 def allowed_file(filename):
      return '.' in filename and \
             filename.rsplit('.',1)[1].lower() in ALLOWED_EXTENSIONS
+
+def save_player_file(file, user, timestamp):
+     user_folder = UPLOAD_FOLDER+'/User_'+str(user)
+     try:
+          os.makedirs(user_folder)
+     except OSError:
+          pass
+     time_str = timestamp.strftime('%Y%m%d%H%M%S')
+     filename = time_str+'_'+secure_filename(file.filename)
+     try:
+          file.save(os.path.join(user_folder, filename))
+     except Exception as e:
+          return e
+
+def save_player(file):
+     #needs to be replaced with the actual user once we get the auth setup
+     user = 1
+     timestamp = datetime.now()     
+     error = save_player_file(file, user, timestamp)
+     if error:
+          return 'Error saving file: '+str(error)
 
 def upload_file(app):
      if request.method == 'POST':
@@ -22,9 +45,13 @@ def upload_file(app):
                flash('Please upload an approved file type!')
                return redirect(url_for('upload_page'))
           if file and allowed_file(file.filename):
-               filename = secure_filename(file.filename)
-               file.save(os.path.join(UPLOAD_FOLDER, filename))
-               flash('File successfully uploaded!')
-               return redirect(url_for('index'))
-
-     return render_template('upload.html')
+               error = save_player(file)
+               if error:
+                    flash(error)
+                    return redirect(url_for('upload_page'))
+               else:
+                    flash('File successfully uploaded!')
+                    return redirect(url_for('index'))
+     query = 'SELECT game_id, name FROM Games'
+     games = db.query_db(query)
+     return render_template('upload.html', games=games)
