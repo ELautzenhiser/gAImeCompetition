@@ -34,4 +34,9 @@ def create_app(test_config=None):
     def about():
         return render_template('about.html')
 
+    from . import upload
+    @app.route('/upload', methods=['GET', 'POST'])
+    def upload_page():
+        return upload.upload_file(app)
+
     return app
