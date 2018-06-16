@@ -24,7 +24,6 @@ def upload_file(app):
           if file and allowed_file(file.filename):
                filename = secure_filename(file.filename)
                file.save(os.path.join(UPLOAD_FOLDER, filename))
-               file.save(filename)
                flash('File successfully uploaded!')
                return redirect(url_for('index'))
 
