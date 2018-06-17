@@ -60,7 +60,7 @@ def query_db(query, fetchone=False):
           return cursor.fetchall()
 
 def insert_db(insert):
-     db = db.open_db()
+     db = open_db()
      with db.cursor() as cursor:
           success = cursor.execute(insert)
      db.commit()

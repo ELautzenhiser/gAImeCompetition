@@ -22,15 +22,26 @@ def save_player_file(file, user, timestamp):
      try:
           file.save(os.path.join(user_folder, filename))
      except Exception as e:
-          return e
+          return (None, e)
+     return (filename, None)
 
-def save_player(file):
+def save_player_db(filename, user, timestamp, game):
+     time_str = timestamp.strftime('%Y-%m-%d %H:%M:%S')
+     language = '1'
+     insert_statement = 'INSERT INTO Players (file_location, language_id, game_id, user_id, created_dt) ' \
+                        'VALUES (\'{0}\', {1}, {2}, {3}, \'{4}\')'.format(filename, language, game, user, time_str)
+     return db.insert_db(insert_statement)
+
+def save_player(file, game):
      #needs to be replaced with the actual user once we get the auth setup
      user = 1
      timestamp = datetime.now()     
-     error = save_player_file(file, user, timestamp)
+     filename, error = save_player_file(file, user, timestamp)
      if error:
           return 'Error saving file: '+str(error)
+     success = save_player_db(filename, user, timestamp, game)
+     if not success:
+          return 'Error saving to database.'
 
 def upload_file(app):
      if request.method == 'POST':
@@ -38,6 +49,10 @@ def upload_file(app):
                flash('No file part')
                return redirect(url_for('upload_page'))
           file = request.files['file']
+          if 'game' not in request.form:
+               flash('Please choose a game')
+               return redirect(url_for('upload_page'))
+          game = request.form['game']
           if file.filename == '':
                flash('No selected file')
                return redirect(url_for('index'))
@@ -45,7 +60,7 @@ def upload_file(app):
                flash('Please upload an approved file type!')
                return redirect(url_for('upload_page'))
           if file and allowed_file(file.filename):
-               error = save_player(file)
+               error = save_player(file, game)
                if error:
                     flash(error)
                     return redirect(url_for('upload_page'))

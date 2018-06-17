@@ -31,7 +31,7 @@ CREATE TABLE Games (
 DROP TABLE IF EXISTS Players;
 CREATE TABLE Players (
 	player_id INT AUTO_INCREMENT NOT NULL,
-	file_location VARCHAR(30),
+	file_location VARCHAR(100),
 	language_id INT NOT NULL,
 	game_id INT NOT NULL,
 	user_id INT NOT NULL,

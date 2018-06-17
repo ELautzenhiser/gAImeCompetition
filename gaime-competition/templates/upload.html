@@ -8,7 +8,7 @@
 	<p>At this time, we support extensions .py and .txt.</p>
 	<form method=post enctype=multipart/form-data>
 		<input type=file name=file>
-		<select>
+		<select id=game name=game>
 			{% for game in games %}
 				<option value="{{ game['game_id'] }}">{{ game['name'] }}</option>
 			{% endfor %}
