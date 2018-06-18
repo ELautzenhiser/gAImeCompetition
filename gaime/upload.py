@@ -1,11 +1,13 @@
 import os
-from flask import Flask, flash, g, request, redirect, url_for, render_template
+from flask import Flask, flash, g, request, redirect, url_for, render_template, Blueprint
 from werkzeug.utils import secure_filename
 from datetime import datetime
 from . import db
 
-UPLOAD_FOLDER = 'gaime-competition/Players'
+UPLOAD_FOLDER = 'gaime/Players'
 ALLOWED_EXTENSIONS = set(['py', 'txt'])
+
+bp = Blueprint('players', __name__)
 
 def allowed_file(filename):
      return '.' in filename and \
@@ -43,27 +45,28 @@ def save_player(file, game):
      if not success:
           return 'Error saving to database.'
 
-def upload_file(app):
+@bp.route('/upload', methods=['GET', 'POST'])
+def upload_file():
      if request.method == 'POST':
           if 'file' not in request.files:
                flash('No file part')
-               return redirect(url_for('upload_page'))
+               return redirect(url_for('upload_file'))
           file = request.files['file']
           if 'game' not in request.form:
                flash('Please choose a game')
-               return redirect(url_for('upload_page'))
+               return redirect(url_for('upload_file'))
           game = request.form['game']
           if file.filename == '':
                flash('No selected file')
                return redirect(url_for('compete.index'))
           if file and not allowed_file(file.filename):
                flash('Please upload an approved file type!')
-               return redirect(url_for('upload_page'))
+               return redirect(url_for('upload_file'))
           if file and allowed_file(file.filename):
                error = save_player(file, game)
                if error:
                     flash(error)
-                    return redirect(url_for('upload_page'))
+                    return redirect(url_for('upload_file'))
                else:
                     flash('File successfully uploaded!')
                     return redirect(url_for('compete.index'))

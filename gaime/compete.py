@@ -11,8 +11,8 @@ bp = Blueprint('compete', __name__)
 def index():
     db = get_db()
     db.execute(
-        'SELECT name, max_num_players, username, created_dt'
-        ' FROM Games JOIN Users ON Games.author_id = Users.user_id'
+        'SELECT g.name, g.max_num_players, u.username, g.created_dt'
+        ' FROM Games g JOIN Users u ON g.author_id = u.user_id'
         ' ORDER BY game_id DESC'
     )
     games = db.fetchmany(20)
