@@ -30,7 +30,7 @@ def save_player_file(file, user, timestamp):
 def save_player_db(filename, user, timestamp, game):
      time_str = timestamp.strftime('%Y-%m-%d %H:%M:%S')
      language = '1'
-     insert_statement = 'INSERT INTO Players (filename, language_id, game_id, author_id, created_dt) ' \
+     insert_statement = 'INSERT INTO Players (file_location, language_id, game_id, author_id, created_dt) ' \
                         'VALUES (\'{0}\', {1}, {2}, {3}, \'{4}\')'.format(filename, language, game, user, time_str)
      return db.insert_db(insert_statement)
 
