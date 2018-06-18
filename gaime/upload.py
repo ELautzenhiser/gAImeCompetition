@@ -7,7 +7,7 @@ from . import db
 UPLOAD_FOLDER = 'gaime/Players'
 ALLOWED_EXTENSIONS = set(['py', 'txt'])
 
-bp = Blueprint('players', __name__)
+bp = Blueprint('upload', __name__)
 
 def allowed_file(filename):
      return '.' in filename and \
@@ -30,7 +30,7 @@ def save_player_file(file, user, timestamp):
 def save_player_db(filename, user, timestamp, game):
      time_str = timestamp.strftime('%Y-%m-%d %H:%M:%S')
      language = '1'
-     insert_statement = 'INSERT INTO Players (file_location, language_id, game_id, author_id, created_dt) ' \
+     insert_statement = 'INSERT INTO Players (filename, language_id, game_id, author_id, created_dt) ' \
                         'VALUES (\'{0}\', {1}, {2}, {3}, \'{4}\')'.format(filename, language, game, user, time_str)
      return db.insert_db(insert_statement)
 
@@ -49,19 +49,19 @@ def save_player(file, game):
 def upload_file():
      if request.method == 'POST':
           if 'file' not in request.files:
-               flash('No file part')
-               return redirect(url_for('upload_file'))
+               flash('You must choose a file to upload')
+               return redirect(url_for('upload.upload_file'))
           file = request.files['file']
           if 'game' not in request.form:
                flash('Please choose a game')
-               return redirect(url_for('upload_file'))
+               return redirect(url_for('upload.upload_file'))
           game = request.form['game']
           if file.filename == '':
                flash('No selected file')
                return redirect(url_for('compete.index'))
           if file and not allowed_file(file.filename):
                flash('Please upload an approved file type!')
-               return redirect(url_for('upload_file'))
+               return redirect(url_for('upload.upload_file'))
           if file and allowed_file(file.filename):
                error = save_player(file, game)
                if error:

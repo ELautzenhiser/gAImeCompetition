@@ -40,6 +40,7 @@ CREATE TABLE Players (
 	game_id INT NOT NULL,
 	author_id INT NOT NULL,
 	created_dt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	active enum('A','I') NOT NULL DEFAULT 'A',
 	PRIMARY KEY (player_id),
 	FOREIGN KEY (language_id) REFERENCES Languages (language_id),
 	FOREIGN KEY (game_id) REFERENCES Games (game_id),

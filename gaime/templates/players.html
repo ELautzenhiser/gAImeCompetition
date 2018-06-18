@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Your Players{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+	<a class="button" href="{{ url_for('upload.upload_file') }}">Upload a New Player</a>
+  <h2>Available Players</h2>
+  {% for player in player_dict %}
+    <article class="player">
+      <header>
+        <div>
+          <h1>{{ player['filename'] }}</h1>
+          <ul>
+            <li>game: {{ player['game'] }}</li>
+			<li>language: {{ player['language'] }}</li>
+            <li>created: {{ player['created_dt'].strftime('%Y-%m-%d %H:%M:%S') }}</li>
+			<li><form action="{{ url_for('players.delete', id=player['player_id']) }}" method='post'>
+					<input class='danger' type='submit' value='Delete' onclick="return confirm('Are you sure?');">
+				</form></li>
+		  </ul>
+        </div>
+      </header>
+    </article>
+    {% if not loop.last %}
+      <hr>
+    {% endif %}
+  {% endfor %}
+{% endblock %}
