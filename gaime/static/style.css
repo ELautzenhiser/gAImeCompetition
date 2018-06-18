@@ -21,3 +21,13 @@ nav a.active {
     background-color: #4CAF50;
     color: white;
 }
+
+.game-listing {
+    border: 1px solid #ddd;
+    padding: 5px 25px;
+    border-radius: 10px;
+}
+
+.game-listing:hover {
+    background: aliceblue;
+}

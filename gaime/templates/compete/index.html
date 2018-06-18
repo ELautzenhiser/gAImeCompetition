@@ -9,12 +9,12 @@
   {% for game in games %}
     <article class="game">
       <header>
-        <div>
+        <div class="game-listing">
           <h1>{{ game['name'] }}</h1>
           <ul>
             <li>author: {{ game['username'] }}</li>
             <li>created: {{ game['created_dt'].strftime('%Y-%m-%d') }}</li>
-		  </ul>
+          </ul>
         </div>
       </header>
     </article>
