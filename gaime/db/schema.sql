@@ -2,13 +2,13 @@ SET foreign_key_checks=0;
 DROP TABLE IF EXISTS Users;
 CREATE TABLE Users (
 	user_id INT AUTO_INCREMENT NOT NULL,
-        username TEXT UNIQUE NOT NULL,
+        username VARCHAR(30) UNIQUE NOT NULL,
 	email VARCHAR(30) NOT NULL,
 	password VARCHAR(30) NOT NULL,
 	privileges TINYINT NOT NULL DEFAULT 0,
 	fname VARCHAR(30),
 	lname VARCHAR(30),
-	created_dt DATETIME NOT NULL,
+	created_dt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	active enum('A','I') NOT NULL DEFAULT 'A',
 	PRIMARY KEY (user_id)
 	);
@@ -27,7 +27,7 @@ CREATE TABLE Games (
         created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	max_num_players INT NOT NULL,
 	default_player INT,
-        author INT NOT NULL,
+        author_id INT NOT NULL,
         FOREIGN KEY (author_id) REFERENCES Users (user_id),
 	PRIMARY KEY (game_id)
 	);
@@ -74,4 +74,8 @@ SET foreign_key_checks=1;
 	
 INSERT INTO Languages (name) VALUES ('Python 3');
 
-INSERT INTO Games (name, max_num_players) VALUES ('Rock Paper Scissors', 2);
+INSERT INTO Users (username, email, password, privileges)
+  VALUES ('default_user', 'shanetangofandango@gmail.com', 'password', 5);
+
+INSERT INTO Games (name, max_num_players, author_id)
+  VALUES ('Rock Paper Scissors', 2, 1);

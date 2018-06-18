@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{ block title %}Join the gAIme!{% endblock %}</h1>
+  <h1>{% block title %}Join the gAIme!{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
@@ -13,7 +13,7 @@
           <h1>{{ game['name'] }}</h1>
           <ol>
             <li>author: {{ game['username'] }}</li>
-            <li>created: {{ game['created'].strftime('%Y-%m-%d }}</li>
+            <li>created: {{ game['created_dt'].strftime('%Y-%m-%d') }}</li>
         </div>
       </header>
     </article>
@@ -22,4 +22,3 @@
     {% endif %}
   {% endfor %}
 {% endblock %}
-        

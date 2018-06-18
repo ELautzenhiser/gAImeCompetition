@@ -36,6 +36,10 @@ def db_connect():
                           password=sql_vals['password'])
      return g.db
 
+def get_db():
+    c = db_connect()
+    return c.cursor(pymysql.cursors.DictCursor)
+
 def db_close(e=None):
      db = g.pop('db', None)
 
