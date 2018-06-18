@@ -55,14 +55,16 @@ def init_db():
                cursor.execute(statement)
      db.commit()
 
-def query_db(query, fetchone=False):
+def query_db(query, num_rows=-1):
      db = open_db()
      with db.cursor(pymysql.cursors.DictCursor) as cursor:
           cursor.execute(query)
-     if fetchone:
+     if num_rows == 1:
           return cursor.fetchone()
-     else:
+     elif num_rows == -1:
           return cursor.fetchall()
+     else:
+          return cursor.fetchmany(num_rows)
 
 def insert_db(insert):
      db = open_db()
