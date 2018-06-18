@@ -2,7 +2,7 @@ import os
 from flask import Flask, flash, g, request, redirect, url_for, render_template
 from werkzeug.utils import secure_filename
 from datetime import datetime
-from .db import db
+from . import db
 
 UPLOAD_FOLDER = 'gaime-competition/Players'
 ALLOWED_EXTENSIONS = set(['py', 'txt'])
@@ -28,7 +28,7 @@ def save_player_file(file, user, timestamp):
 def save_player_db(filename, user, timestamp, game):
      time_str = timestamp.strftime('%Y-%m-%d %H:%M:%S')
      language = '1'
-     insert_statement = 'INSERT INTO Players (file_location, language_id, game_id, user_id, created_dt) ' \
+     insert_statement = 'INSERT INTO Players (file_location, language_id, game_id, author_id, created_dt) ' \
                         'VALUES (\'{0}\', {1}, {2}, {3}, \'{4}\')'.format(filename, language, game, user, time_str)
      return db.insert_db(insert_statement)
 
@@ -55,7 +55,7 @@ def upload_file(app):
           game = request.form['game']
           if file.filename == '':
                flash('No selected file')
-               return redirect(url_for('index'))
+               return redirect(url_for('compete.index'))
           if file and not allowed_file(file.filename):
                flash('Please upload an approved file type!')
                return redirect(url_for('upload_page'))
@@ -66,7 +66,7 @@ def upload_file(app):
                     return redirect(url_for('upload_page'))
                else:
                     flash('File successfully uploaded!')
-                    return redirect(url_for('index'))
+                    return redirect(url_for('compete.index'))
      query = 'SELECT game_id, name FROM Games'
      games = db.query_db(query)
      return render_template('upload.html', games=games)

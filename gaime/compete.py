@@ -3,7 +3,7 @@ from flask import (
 )
 from werkzeug.exceptions import abort
 
-from .db.db import get_db
+from .db import get_db
 
 bp = Blueprint('compete', __name__)
 

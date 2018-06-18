@@ -1,6 +1,6 @@
 import pymysql
 import click
-from .db_config import *
+from .database.db_config import *
 from flask import current_app, g
 from flask.cli import with_appcontext
 
@@ -48,7 +48,7 @@ def close_db(e=None):
 
 def init_db():
      db = open_db()
-     statements = parse_sql('db/schema.sql')
+     statements = parse_sql('database/schema.sql')
 
      with db.cursor() as cursor:
           for statement in statements:
