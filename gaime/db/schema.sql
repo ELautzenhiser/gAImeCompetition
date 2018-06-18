@@ -24,7 +24,7 @@ DROP TABLE IF EXISTS Games;
 CREATE TABLE Games (
 	game_id INT AUTO_INCREMENT NOT NULL,
 	name VARCHAR(30) NOT NULL,
-        created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        created_dt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	max_num_players INT NOT NULL,
 	default_player INT,
         author_id INT NOT NULL,
@@ -35,11 +35,11 @@ CREATE TABLE Games (
 DROP TABLE IF EXISTS Players;
 CREATE TABLE Players (
 	player_id INT AUTO_INCREMENT NOT NULL,
-	file_location VARCHAR(30),
+	file_location VARCHAR(100),
 	language_id INT NOT NULL,
 	game_id INT NOT NULL,
 	author_id INT NOT NULL,
-	created_dt DATETIME NOT NULL,
+	created_dt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY (player_id),
 	FOREIGN KEY (language_id) REFERENCES Languages (language_id),
 	FOREIGN KEY (game_id) REFERENCES Games (game_id),
@@ -74,8 +74,11 @@ SET foreign_key_checks=1;
 	
 INSERT INTO Languages (name) VALUES ('Python 3');
 
-INSERT INTO Users (username, email, password, privileges)
-  VALUES ('default_user', 'shanetangofandango@gmail.com', 'password', 5);
+
+INSERT INTO Users (username, email, password, privileges,
+                   fname, created_dt, active)
+  VALUES ('gaime_admin', 'admin@gaime.com', 'admin', -1,
+          'Admin', '2018-06-15 23:59:59', 'A');
 
 INSERT INTO Games (name, max_num_players, author_id)
   VALUES ('Rock Paper Scissors', 2, 1);

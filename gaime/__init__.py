@@ -33,4 +33,9 @@ def create_app(test_config=None):
     from . import compete
     app.register_blueprint(compete.bp)
 
+    from . import upload
+    @app.route('/upload', methods=['GET', 'POST'])
+    def upload_page():
+        return upload.upload_file(app)
+
     return app

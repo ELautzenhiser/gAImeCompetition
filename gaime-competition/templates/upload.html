@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block header %}
+	<h1>{% block title %}Upload{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+	<p>At this time, we support extensions .py and .txt.</p>
+	<form method=post enctype=multipart/form-data>
+		<input type=file name=file>
+		<select id=game name=game>
+			{% for game in games %}
+				<option value="{{ game['game_id'] }}">{{ game['name'] }}</option>
+			{% endfor %}
+		<input type=submit value=Upload>
+    </form>
+{% endblock %}

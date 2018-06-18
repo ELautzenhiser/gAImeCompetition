@@ -2,15 +2,16 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <title>{% block title %}{% endblock %} | gAImes</title>
 <nav>
-     <a class="home-button" href="{{ url_for('compete.index') }}">gAIme Competition</a>
-     <a class="button" href="{{ url_for('about') }}">About Us</a>
+  <a class="home-button" href="{{ url_for('compete.index') }}">gAIme Competition</a>
+  <a class="button" href="{{ url_for('upload_page') }}">Upload a Player</a>
+  <a class="button" href="{{ url_for('about') }}">About Us</a>
 </nav>
 <section class='content'>
-     <header>
-          {% block header %}{% endblock %}
-     </header>
-     {% for message in get_flashed_messages() %}
-          <div class='flash'>{{ message }}</div>
-     {% endfor %}
-     {% block content %}{% endblock %}
+  <header>
+    {% block header %}{% endblock %}
+  </header>
+  {% for message in get_flashed_messages() %}
+    <div class='flash'>{{ message }}</div>
+  {% endfor %}
+    {% block content %}{% endblock %}
 </section>
