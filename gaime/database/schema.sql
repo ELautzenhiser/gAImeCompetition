@@ -6,7 +6,7 @@ USE gaime;
 
 CREATE TABLE Users (
 	user_id INT AUTO_INCREMENT NOT NULL,
-        username VARCHAR(30) UNIQUE NOT NULL,
+	username VARCHAR(30) UNIQUE NOT NULL,
 	email VARCHAR(30) NOT NULL,
 	password VARCHAR(30) NOT NULL,
 	privileges TINYINT NOT NULL DEFAULT 0,
@@ -77,13 +77,13 @@ INSERT INTO Languages (name) VALUES ('Python 3');
 
 
 INSERT INTO Users (username, email, password, privileges,
-                   fname, created_dt, active)
-  VALUES ('gaime_admin', 'admin@gaime.com', 'admin', -1,
-          'Admin', '2018-06-15 23:59:59', 'Active');
+	fname, created_dt, active)
+	VALUES ('gaime_admin', 'admin@gaime.com', 'admin', -1,
+	'Admin', '2018-06-15 23:59:59', 'Active');
 
 INSERT INTO Games (name, max_num_players, author_id, doc_file)
-  VALUES ('Rock Paper Scissors', 2, 1, 'rock_paper_scissors.txt');
+	VALUES ('Rock Paper Scissors', 2, 1, 'rock_paper_scissors.txt');
   
 INSERT INTO Uploads (filename, language_id, game_id, author_id, created_dt, active, type)
-  VALUES ('20180618235959_rock_paper_scissors.py', 1, 1, 1, '2018-06-18 23:59:59', 'Inactive', 'Player'),
-  ('20180619120000_rock_paper_scissors.py', 1, 1, 1, '2018-06-19 12:00:00', 'Active', 'Player');
+	VALUES ('20180618235959_rock_paper_scissors.py', 1, 1, 1, '2018-06-18 23:59:59', 'Inactive', 'Player'),
+	('20180619120000_rock_paper_scissors.py', 1, 1, 1, '2018-06-19 12:00:00', 'Active', 'Player');
