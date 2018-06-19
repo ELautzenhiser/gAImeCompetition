@@ -13,7 +13,7 @@ def view_players():
      #needs to be replaced once we have auth setup
      user = 1
      players_query = 'SELECT p.player_id, ' \
-                     'SUBSTRING(p.file_location, 16) as filename, ' \
+                     'SUBSTRING(p.filename, 16) as filename, ' \
                      'p.created_dt, g.name as game, l.name as language ' \
                      'FROM Players p inner join Languages l ' \
                      'ON p.language_id = l.language_id ' \
