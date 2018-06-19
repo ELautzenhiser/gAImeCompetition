@@ -12,21 +12,22 @@ bp = Blueprint('players', __name__)
 def view_players():
      #needs to be replaced once we have auth setup
      user = 1
-     players_query = 'SELECT p.player_id, ' \
-                     'SUBSTRING(p.filename, 16) as filename, ' \
-                     'p.created_dt, g.name as game, l.name as language ' \
-                     'FROM Players p inner join Languages l ' \
-                     'ON p.language_id = l.language_id ' \
-                     'INNER JOIN Games g ON p.game_id = g.game_id ' \
-                     'WHERE p.author_id={0} AND p.active=\'A\' ' \
-                     'ORDER BY p.created_dt DESC'.format(user)
+     players_query = 'SELECT up.upload_id, ' \
+                     'SUBSTRING(up.filename, 16) as filename, ' \
+                     'up.created_dt, g.name as game, l.name as language ' \
+                     'FROM Uploads up inner join Languages l ' \
+                     'ON up.language_id = l.language_id ' \
+                     'INNER JOIN Games g ON up.game_id = g.game_id ' \
+                     'WHERE up.author_id={0} AND up.active=\'Active\' ' \
+                     'AND up.type=\'Player\' ' \
+                     'ORDER BY up.created_dt DESC'.format(user)
      
      players = query_db(players_query, -1)
      return render_template('players.html', player_dict=players)
 
 def archive_player_file(id):
-     player_query = 'SELECT filename, author_id FROM Players ' \
-                    'WHERE player_id={0}'.format(id)
+     player_query = 'SELECT filename, author_id FROM Uploads ' \
+                    'WHERE upload_id={0}'.format(id)
      player = query_db(player_query)[0]
      user_id = player['author_id']
      filename = player['filename']
@@ -43,8 +44,8 @@ def archive_player_file(id):
           return e
 
 def deactivate_player(id):
-     update_statement = 'UPDATE Players SET active=\'I\' ' \
-                  'WHERE player_id={0}'.format(id)
+     update_statement = 'UPDATE Uploads SET active=\'Inactive\' ' \
+                  'WHERE upload_id={0}'.format(id)
      
      return insert_db(update_statement)
 

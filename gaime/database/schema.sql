@@ -1,5 +1,9 @@
-SET foreign_key_checks=0;
-DROP TABLE IF EXISTS Users;
+DROP DATABASE IF EXISTS gaime;
+
+CREATE DATABASE gaime;
+
+USE gaime;
+
 CREATE TABLE Users (
 	user_id INT AUTO_INCREMENT NOT NULL,
         username VARCHAR(30) UNIQUE NOT NULL,
@@ -9,47 +13,46 @@ CREATE TABLE Users (
 	fname VARCHAR(30),
 	lname VARCHAR(30),
 	created_dt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	active enum('A','I') NOT NULL DEFAULT 'A',
+	active enum('Active','Inactive') NOT NULL DEFAULT 'Active',
 	PRIMARY KEY (user_id)
 	);
 
-DROP TABLE IF EXISTS Languages;	
 CREATE TABLE Languages (
 	language_id INT AUTO_INCREMENT NOT NULL,
 	name VARCHAR(30) NOT NULL,
 	PRIMARY KEY (language_id)
 	);
 	
-DROP TABLE IF EXISTS Games;
+
 CREATE TABLE Games (
 	game_id INT AUTO_INCREMENT NOT NULL,
 	name VARCHAR(30) NOT NULL,
-        created_dt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	created_dt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	max_num_players INT NOT NULL,
 	default_player INT,
-        author_id INT NOT NULL,
-        FOREIGN KEY (author_id) REFERENCES Users (user_id),
+	author_id INT NOT NULL,
+    doc_file VARCHAR(100) NOT NULL,
+	FOREIGN KEY (author_id) REFERENCES Users (user_id),
 	PRIMARY KEY (game_id)
 	);
 
-DROP TABLE IF EXISTS Players;
-CREATE TABLE Players (
-	player_id INT AUTO_INCREMENT NOT NULL,
+CREATE TABLE Uploads (
+	upload_id INT AUTO_INCREMENT NOT NULL,
 	filename VARCHAR(100),
 	language_id INT NOT NULL,
 	game_id INT NOT NULL,
 	author_id INT NOT NULL,
 	created_dt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	active enum('A','I') NOT NULL DEFAULT 'A',
-	PRIMARY KEY (player_id),
+	active enum('Active','Inactive') NOT NULL DEFAULT 'Active',
+    type enum('Player', 'Ref') NOT NULL DEFAULT 'Player',
+	PRIMARY KEY (upload_id),
 	FOREIGN KEY (language_id) REFERENCES Languages (language_id),
 	FOREIGN KEY (game_id) REFERENCES Games (game_id),
 	FOREIGN KEY (author_id) REFERENCES Users (user_id)
 	);
 	
-ALTER TABLE Games ADD CONSTRAINT FOREIGN KEY (default_player) REFERENCES Players (player_id);
+ALTER TABLE Games ADD CONSTRAINT FOREIGN KEY (default_player) REFERENCES Uploads (upload_id);
 
-DROP TABLE IF EXISTS Matches;
 CREATE TABLE Matches (
 	match_id INT AUTO_INCREMENT NOT NULL,
 	start_time DATETIME NOT NULL,
@@ -59,11 +62,10 @@ CREATE TABLE Matches (
 	FOREIGN KEY (game_id) REFERENCES Games (game_id)
 	);
 
-DROP TABLE IF EXISTS Friendships;
 CREATE TABLE Friendships (
 	requester_id INT NOT NULL,
 	responder_id INT NOT NULL,
-	status ENUM('S','R','D','A','U') NOT NULL,
+	status ENUM('Sent','Rescinded','Declined','Accepted','Unfriended') NOT NULL,
 	request_time DATETIME NOT NULL,
 	response_time DATETIME,
 	PRIMARY KEY (requester_id, responder_id),
@@ -71,15 +73,17 @@ CREATE TABLE Friendships (
 	FOREIGN KEY (responder_id) REFERENCES Users (user_id)
 	);
 	
-SET foreign_key_checks=1;
-	
 INSERT INTO Languages (name) VALUES ('Python 3');
 
 
 INSERT INTO Users (username, email, password, privileges,
                    fname, created_dt, active)
   VALUES ('gaime_admin', 'admin@gaime.com', 'admin', -1,
-          'Admin', '2018-06-15 23:59:59', 'A');
+          'Admin', '2018-06-15 23:59:59', 'Active');
 
-INSERT INTO Games (name, max_num_players, author_id)
-  VALUES ('Rock Paper Scissors', 2, 1);
+INSERT INTO Games (name, max_num_players, author_id, doc_file)
+  VALUES ('Rock Paper Scissors', 2, 1, 'rock_paper_scissors.txt');
+  
+INSERT INTO Uploads (filename, language_id, game_id, author_id, created_dt, active, type)
+  VALUES ('20180618235959_rock_paper_scissors.py', 1, 1, 1, '2018-06-18 23:59:59', 'Inactive', 'Player'),
+  ('20180619120000_rock_paper_scissors.py', 1, 1, 1, '2018-06-19 12:00:00', 'Active', 'Player');

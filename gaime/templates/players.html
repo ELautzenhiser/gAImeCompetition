@@ -16,7 +16,7 @@
             <li>game: {{ player['game'] }}</li>
 			<li>language: {{ player['language'] }}</li>
             <li>created: {{ player['created_dt'].strftime('%Y-%m-%d %H:%M:%S') }}</li>
-			<li><form action="{{ url_for('players.delete', id=player['player_id']) }}" method='post'>
+			<li><form action="{{ url_for('players.delete', id=player['upload_id']) }}" method='post'>
 					<input class='danger' type='submit' value='Delete' onclick="return confirm('Are you sure?');">
 				</form></li>
 		  </ul>

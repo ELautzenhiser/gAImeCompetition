@@ -47,7 +47,11 @@ def close_db(e=None):
           db.close()
 
 def init_db():
-     db = open_db()
+     #database hasn't been created, so we use a new connection to make it
+     db = pymysql.connect(host=sql_vals['host'],
+                          port=sql_vals['port'],
+                          user=sql_vals['user'],
+                          password=sql_vals['password'])
      statements = parse_sql('database/schema.sql')
 
      with db.cursor() as cursor:
