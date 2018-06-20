@@ -45,7 +45,7 @@ def save_player(file, game):
     if not success:
         return 'Error saving to database.'
 
-def save_game(author_id, title, description, referee_code):
+def save_game(author_id, title, description, referee_code, language_id):
     ref_dir = UPLOAD_FOLDER + '/Referees/' + str(author_id)
     desc_dir = UPLOAD_FOLDER + '/GameDescriptions/' + str(author_id)
     try:
@@ -58,8 +58,10 @@ def save_game(author_id, title, description, referee_code):
         return e
 
     time_str = datetime.now().strftime('%Y%m%d%H%M%S')
-    # eventually we should have mroe than just .py files
-    ref_filename = secure_filename(time_str + title + '.py')
+    extension = ""
+    if language_id == 1:
+        ext = '.py'
+    ref_filename = secure_filename(time_str + title + ext)
     desc_filename = secure_filename(time_str + title + '.md')
     try:
         with open(os.path.join(ref_dir, 'ref_filename')) as f:
@@ -69,9 +71,12 @@ def save_game(author_id, title, description, referee_code):
     except Exception as e:
         return e
 
-    insert
-    success = insert_db("INSERT INTO Games
-    insert_db("INSERT INTO Games (name, 
+    success = insert_db(Uploads,
+                        filename=ref_filename,
+                        language_id=language_id,
+                        game_id=
+    success = insert_db(Uploads,
+                        filename,
 
     
     return(filename, None)
