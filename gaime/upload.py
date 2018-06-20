@@ -2,9 +2,9 @@ import os
 from flask import Flask, flash, g, request, redirect, url_for, render_template, Blueprint
 from werkzeug.utils import secure_filename
 from datetime import datetime
-from . import db
+from .db import insert_db, query_db
 
-UPLOAD_FOLDER = 'gaime/Players'
+UPLOAD_FOLDER = 'UserSubmissions'
 ALLOWED_EXTENSIONS = set(['py', 'txt'])
 
 bp = Blueprint('upload', __name__, url_prefix='/upload')
@@ -36,7 +36,7 @@ def save_player_db(filename, user, timestamp, game):
 
 def save_player(file, game):
     #needs to be replaced with the actual user once we get the auth setup
-    user = 1
+    user = g.user['id']
     timestamp = datetime.now()    
     filename, error = save_player_file(file, user, timestamp)
     if error:
@@ -44,6 +44,37 @@ def save_player(file, game):
     success = save_player_db(filename, user, timestamp, game)
     if not success:
         return 'Error saving to database.'
+
+def save_game(author_id, title, description, referee_code):
+    ref_dir = UPLOAD_FOLDER + '/Referees/' + str(author_id)
+    desc_dir = UPLOAD_FOLDER + '/GameDescriptions/' + str(author_id)
+    try:
+        os.makedirs(ref_dir)
+        os.makedirs(desc_dir)
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            return e
+    except Exception as e:
+        return e
+
+    time_str = datetime.now().strftime('%Y%m%d%H%M%S')
+    # eventually we should have mroe than just .py files
+    ref_filename = secure_filename(time_str + title + '.py')
+    desc_filename = secure_filename(time_str + title + '.md')
+    try:
+        with open(os.path.join(ref_dir, 'ref_filename')) as f:
+            f.write(referee_code)
+        with open(os.path.join(desc_dir, 'desc_filename')) as f:
+            f.write(description)
+    except Exception as e:
+        return e
+
+    db.insert_db(    
+
+    
+    return(filename, None)
+        
+    
 
 @bp.route('/upload', methods=['GET', 'POST'])
 def upload_file():
@@ -76,4 +107,18 @@ def upload_file():
 
 @bp.route('/game', methods=['GET', 'POST']))
 def upload_game():
-    pass      # not yet implemented...
+    if request.method == 'POST':
+        title = request.form['title']
+        description = request.form['description']
+        referee_code = request.form['referee_code']
+
+        if not title:
+            error = 'Title is required.'
+
+        if error is not None:
+            flash(error)
+        else:
+            error = save_game(g.user['id'], title, description, referee_code)
+        return redirect(url_for('compete.index'))
+
+    return render_template('upload/game.html')

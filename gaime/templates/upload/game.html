@@ -8,8 +8,10 @@
   <form method="post">
     <label for="title">Title</label>
     <input name="title" id="title" value="{{ request.form['title'] }}" required>
+    <label for="description">Description</label>
+    <textarea name="description" id="description">{{ request.form['description'] }}</textarea>
     <label for="referee_code">Code</label>
-    <textarea name="referee_code" id="referee_code">{{ request.form['body'] }}</textarea>
+    <textarea name="referee_code" id="referee_code">{{ request.form['referee_code'] }}</textarea>
     <input type="submit" value="Save">
   </form>
 
