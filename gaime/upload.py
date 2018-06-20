@@ -32,7 +32,7 @@ def save_player_db(filename, user, timestamp, game):
     language = '1'
     insert_statement = 'INSERT INTO Uploads (filename, language_id, game_id, author_id, created_dt, type) ' \
                     'VALUES (\'{0}\', {1}, {2}, {3}, \'{4}\', \'Player\')'.format(filename, language, game, user, time_str)
-    return db.insert_db(insert_statement)
+    return insert_db(insert_statement)
 
 def save_player(file, game):
     #needs to be replaced with the actual user once we get the auth setup
@@ -69,7 +69,9 @@ def save_game(author_id, title, description, referee_code):
     except Exception as e:
         return e
 
-    db.insert_db(    
+    insert
+    success = insert_db("INSERT INTO Games
+    insert_db("INSERT INTO Games (name, 
 
     
     return(filename, None)
@@ -102,7 +104,7 @@ def upload_file():
                 flash('File successfully uploaded!')
                 return redirect(url_for('compete.index'))
     query = 'SELECT game_id, name FROM Games'
-    games = db.query_db(query)
+    games = query_db(query)
     return render_template('upload.html', games=games)
 
 @bp.route('/game', methods=['GET', 'POST']))
