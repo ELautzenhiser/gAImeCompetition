@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block header %}
+	<h1>{% block title %}{{ game['name'] }}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<p>{{ game['documentation'] }}
+<ul>
+	<li>Author: {{ game['username'] }}</li>
+	<li>Created: {{ game['created_dt'].strftime('%Y-%m-%d') }}</li>
+	<li>{{ game['min_num_players']  }} to {{ game['max_num_players'] }} players.</li>
+</ul>
+<br>
+{% if top_player %}
+	<h3>Top Player</h3>
+	<ul>
+		<li>Author: {{ top_player['username'] }}</li>
+		<li>Created: {{ top_player['created_dt'].strftime('%Y-%m-%d') }}</li>
+		<li>Score: {{ top_player['score'] }}</li>
+	</ul>
+{% endif %}
+<br>
+{% if players %}
+<h2>Your Players</h2>
+{% for player in players %}
+			<h3>{{ player['filename'] }}</h3>
+			<ul>
+				<li>Language: {{ player['language'] }}</li>
+				<li>Created: {{ player['created_dt'].strftime('%Y-%m-%d %H:%M:%S') }}</li>
+				<li>Score: {{ player['score'] }}</li>
+			</ul>
+	{% if not loop.last %}
+		<hr>
+	{% endif %}
+{% endfor %}
+{% else %}
+	<a class="button" href="{{ url_for('upload.upload_file') }}">Upload a player for this game</a>
+{% endif %}
+{% endblock %}
