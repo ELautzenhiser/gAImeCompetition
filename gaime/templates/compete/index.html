@@ -10,7 +10,7 @@
     <article class="game">
       <header>
         <div class="game-listing">
-          <h1>{{ game['name'] }}</h1>
+          <a class="button" href="{{ url_for('compete.game_info', game_id=game['game_id']) }}"><h1>{{ game['name'] }} - {{ game['num_competitors'] }} Competitor{% if game['num_competitors'] > 1 %}s{% endif %}</h1></a>
           <ul>
             <li>author: {{ game['username'] }}</li>
             <li>created: {{ game['created_dt'].strftime('%Y-%m-%d') }}</li>
