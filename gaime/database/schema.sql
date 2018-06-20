@@ -27,6 +27,7 @@ CREATE TABLE Games (
     game_id INT AUTO_INCREMENT NOT NULL,
     name VARCHAR(30) NOT NULL,
     created_dt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    min_num_players INT NOT NULL,
     max_num_players INT NOT NULL,
     default_player INT,
     author_id INT NOT NULL,
@@ -96,8 +97,8 @@ INSERT INTO Users (username, email, password, privileges,
     VALUES ('gaime_admin', 'admin@gaime.com', 'admin', -1,
             'Admin', '2018-06-15 23:59:59', 'Active');
 
-INSERT INTO Games (name, max_num_players, author_id, doc_file)
-    VALUES ('Rock Paper Scissors', 2, 1, 'rock_paper_scissors.txt');
+INSERT INTO Games (name, min_num_players, max_num_players, author_id, doc_file)
+    VALUES ('Rock Paper Scissors', 2, 2, 1, 'rock_paper_scissors.txt');
 
 INSERT INTO Uploads (filename, language_id, game_id, author_id,
                      created_dt, active, type)

@@ -1,5 +1,5 @@
 import os
-from flask import Blueprint, Flask, flash, g, request, redirect, url_for, render_template
+from flask import Blueprint, flash, g, request, redirect, url_for, render_template
 from datetime import datetime
 from .db import query_db, insert_db
 
@@ -14,12 +14,14 @@ def view_players():
      user = 1
      players_query = 'SELECT up.upload_id, ' \
                      'SUBSTRING(up.filename, 16) as filename, ' \
-                     'up.created_dt, g.name as game, l.name as language ' \
+                     'up.created_dt, g.name as game, l.name as language, ' \
+                     'COALESCE(SUM(m.points),0) as score ' \
                      'FROM Uploads up inner join Languages l ' \
                      'ON up.language_id = l.language_id ' \
                      'INNER JOIN Games g ON up.game_id = g.game_id ' \
+                     'LEFT JOIN Matches m ON up.upload_id=m.winner_id ' \
                      'WHERE up.author_id={0} AND up.active=\'Active\' ' \
-                     'AND up.type=\'Player\' ' \
+                     'AND up.type=\'Player\' GROUP BY up.upload_id ' \
                      'ORDER BY up.created_dt DESC'.format(user)
      
      players = query_db(players_query, -1)
@@ -28,7 +30,7 @@ def view_players():
 def archive_player_file(id):
      player_query = 'SELECT filename, author_id FROM Uploads ' \
                     'WHERE upload_id={0}'.format(id)
-     player = query_db(player_query)[0]
+     player = query_db(player_query, 1)
      user_id = player['author_id']
      filename = player['filename']
      
