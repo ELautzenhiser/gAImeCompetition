@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}New Post{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <form method="post">
+    <label for="title">Title</label>
+    <input name="title" id="title" value="{{ request.form['title'] }}" required>
+    <label for="referee_code">Code</label>
+    <textarea name="referee_code" id="referee_code">{{ request.form['body'] }}</textarea>
+    <input type="submit" value="Save">
+  </form>
+
+  <script src="/static/js/lib/ace/ace.js"></script>
+  <script>
+    function createEditor(name) {
+      // find the textarea
+      var textarea = document.querySelector("form textarea[name=referee_code]);
+
+      // create ace editor
+      var editor = ace.edit()
+      editor.container.style.height = "100px"
+      editor.session.setValue(textarea.value)
+      // replace textarea with ace
+      textarea.parentNode.insertBefore(editor.container, textarea)
+      textarea.style.display = "none"
+      // find the parent form and add submit event listener
+      var form = textarea
+      while (form && form.localName != "form") form = form.parentNode
+      form.addEventListener("submit", function() {
+        // update value of textarea to match value in ace
+        textarea.value = editor.getValue()
+      }, true)
+    }
+  </script>
+{% endblock %}
+
+
