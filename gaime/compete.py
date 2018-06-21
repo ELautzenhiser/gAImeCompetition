@@ -1,8 +1,8 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
+    Blueprint, flash, g, redirect, render_template, request, url_for
 )
 from werkzeug.exceptions import abort
-from .db import query_db
+from .db import query_db, get_db_row
 import random
 
 bp = Blueprint('compete', __name__)
@@ -23,13 +23,7 @@ def index():
 
 @bp.route('/game_info/<int:game_id>', methods=('POST','GET'))
 def game_info(game_id):
-<<<<<<< HEAD
-    #user to be added
-    print(dir(session))
-    user = 1
-=======
     user_id = g.user['id']
->>>>>>> edward
     players_query = 'SELECT up.upload_id, ' \
                     'SUBSTRING(up.filename, 16) as filename, ' \
                     'up.created_dt, l.name as language, ' \
@@ -62,11 +56,6 @@ def game_info(game_id):
     top_player = query_db(top_query, 1)
 
     return render_template('compete/game_info.html',game=game, players=players,
-<<<<<<< HEAD
-                           top_player=top_player, user=user)
-
-
-=======
                            top_player=top_player, user_id=user_id)
 
 def compete(challenger, challenged, ref, game_id):
@@ -77,7 +66,7 @@ def compete(challenger, challenged, ref, game_id):
 def start_competition(player_id,game_id):
     user_id = g.user['id']
 
-    game = get_game_from_id(game_id)
+    game = get_db_row('games',game_id)
 
     if not game:
         flash('Something went wrong! Try again later.')
@@ -102,15 +91,10 @@ def start_competition(player_id,game_id):
     for i in range(num_challenged):
         challenged.append(other_players.pop())
 
-    challenger = get_player_from_id(player_id)
+    challenger = get_db_row('uploads',player_id)
     
     return compete(challenger, challenged, ref, game_id)
 
-
-def get_game_from_id(game_id):
-    query = 'SELECT min_num_players, max_num_players ' \
-           'FROM Games WHERE game_id={0}'.format(game_id)
-    return query_db(query, 1)
 
 def get_ref_for_game(game_id):
     query = 'SELECT upload_id, filename FROM Uploads WHERE active="Active" ' \
@@ -124,8 +108,3 @@ def get_other_players_for_game(game_id, player_id):
             'ORDER BY RAND()'.format(game_id,player_id)
     return query_db(query, -1)
 
-def get_player_from_id(player_id):
-    query = 'SELECT upload_id, author_id, filename FROM Uploads ' \
-            'WHERE upload_id={0}'.format(player_id)
-    return query_db(query, 1)
->>>>>>> edward

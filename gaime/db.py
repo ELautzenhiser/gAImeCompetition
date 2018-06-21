@@ -95,8 +95,20 @@ def insert_db(table, commit=True, **kwargs):
 def update_db(update):
      db = open_db()
      with db.cursor() as cursor:
-          cursor.execute(update)
+          success = cursor.execute(update)
      db.commit()
+     return success
+
+def get_db_row(table, id):
+     table_ids = {'users':'user_id', 'languages':'language_id',
+                  'games':'game_id', 'uploads':'upload_id',
+                  'matches':'match_id', 'moves':'move_id'}
+     id_type = table_ids.get(table.lower())
+     if not id_type:
+          return None
+     query = 'SELECT * FROM {0} WHERE {1}={2}'.format(table, id_type, id)
+     return query_db(query, 1)
+     
 
 @click.command('init-db')
 @with_appcontext
