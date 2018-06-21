@@ -10,8 +10,7 @@ bp = Blueprint('players', __name__)
 
 @bp.route('/players', methods=['GET', 'POST'])
 def view_players():
-     #needs to be replaced once we have auth setup
-     user = 1
+     user_id = g.user['id']
      players_query = 'SELECT up.upload_id, ' \
                      'SUBSTRING(up.filename, 16) as filename, ' \
                      'up.created_dt, g.name as game, l.name as language, ' \
@@ -19,10 +18,10 @@ def view_players():
                      'FROM Uploads up inner join Languages l ' \
                      'ON up.language_id = l.language_id ' \
                      'INNER JOIN Games g ON up.game_id = g.game_id ' \
-                     'LEFT JOIN Matches m ON up.upload_id=m.winner_id ' \
+                     'LEFT JOIN Match_players m ON up.upload_id=m.player_id ' \
                      'WHERE up.author_id={0} AND up.active=\'Active\' ' \
                      'AND up.type=\'Player\' GROUP BY up.upload_id ' \
-                     'ORDER BY up.created_dt DESC'.format(user)
+                     'ORDER BY up.created_dt DESC'.format(user_id)
      
      players = query_db(players_query, -1)
      return render_template('players.html', player_dict=players)
