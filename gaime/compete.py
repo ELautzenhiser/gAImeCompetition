@@ -11,12 +11,14 @@ DOCUMENTATION_FOLDER = 'gaime/Games/'
 @bp.route('/')
 def index():
     game_query = 'SELECT g.game_id, g.name, g.max_num_players, u.username, ' \
-                 'g.created_dt, count(up.upload_id) as num_competitors ' \
+                 'g.created_dt, COALESCE(up.count,0) as num_competitors ' \
                  'FROM Games g INNER JOIN Users u ON g.author_id = u.user_id ' \
-                 'LEFT JOIN Uploads up on g.game_id=up.game_id ' \
-                 'WHERE up.active=\'Active\' AND up.type=\'Player\' ' \
+                 'LEFT JOIN (SELECT count(upload_id) as count, ' \
+                 'game_id from Uploads where active="Active" and ' \
+                 'type="Player" GROUP BY game_id) up on g.game_id=up.game_id ' \
                  'GROUP BY g.game_id ORDER BY g.game_id DESC '
-    games = query_db(game_query, 20)
+    games = query_db(game_query, -1)
+    print(games)
     return render_template('compete/index.html', games=games)
 
 @bp.route('/game_info/<int:game_id>', methods=('POST','GET'))
