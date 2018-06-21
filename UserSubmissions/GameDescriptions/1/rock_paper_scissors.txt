@@ -1,3 +1,0 @@
-Let's play rock paper scissors! Each contestent returns a string: 'rock', 'paper', or 'scissors'. Best two out of three wins! The game continues until there is a winner - ties are replayed and not counted.
-
-Winning a round earns 10 points.
