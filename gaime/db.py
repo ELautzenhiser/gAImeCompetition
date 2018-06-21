@@ -92,6 +92,12 @@ def insert_db(table, commit=True, **kwargs):
          db.commit()
      return success
 
+def update_db(update):
+     db = open_db()
+     with db.cursor() as cursor:
+          cursor.execute(update)
+     db.commit()
+
 @click.command('init-db')
 @with_appcontext
 def init_db_command():

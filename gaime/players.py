@@ -1,7 +1,7 @@
 import os
 from flask import Blueprint, flash, g, request, redirect, url_for, render_template
 from datetime import datetime
-from .db import query_db, insert_db
+from .db import query_db, insert_db, update_db
 
 PLAYER_FOLDER = 'gaime/Players'
 ARCHIVE_FOLDER = 'gaime/Archive/Players'
@@ -48,7 +48,7 @@ def deactivate_player(id):
      update_statement = 'UPDATE Uploads SET active=\'Inactive\' ' \
                   'WHERE upload_id={0}'.format(id)
      
-     return insert_db(update_statement)
+     return update_db(update_statement)
 
 @bp.route('/<int:id>/delete', methods=('POST',))
 def delete(id):
