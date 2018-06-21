@@ -24,12 +24,17 @@
 {% if players %}
 <h2>Your Players</h2>
 {% for player in players %}
+	<a class="game-link" href="{{ url_for('compete.start_competition', game_id=game['game_id'], player_id=player['upload_id']) }}">
+	<article class="player">
+		<div class="game-listing">
 			<h3>{{ player['filename'] }}</h3>
 			<ul>
 				<li>Language: {{ player['language'] }}</li>
 				<li>Created: {{ player['created_dt'].strftime('%Y-%m-%d %H:%M:%S') }}</li>
 				<li>Score: {{ player['score'] }}</li>
 			</ul>
+		</div>
+	</article>
 	{% if not loop.last %}
 		<hr>
 	{% endif %}
