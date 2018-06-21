@@ -66,17 +66,13 @@ def compete(challenger, challenged, ref, game_id):
 def start_competition(player_id,game_id):
     user_id = g.user['id']
 
-    game_query = 'SELECT min_num_players, max_num_players ' \
-                 'FROM Games WHERE game_id={0}'.format(game_id)
-    game = query_db(game_query, 1)
+    game = get_game_from_id(game_id)
 
     if not game:
         flash('Something went wrong! Try again later.')
         return redirect(url_for('compete.index'))
     
-    ref_query = 'SELECT upload_id, filename FROM Uploads WHERE active="Active" ' \
-                'AND game_id={0} AND type="Ref" ORDER BY created_dt DESC LIMIT 1'.format(game_id)
-    ref = query_db(ref_query, 1)
+    ref = get_ref_for_game(game_id)
 
 ##    if not ref:
 ##        flash('There is no referee for that game. Sorry!')
@@ -84,28 +80,40 @@ def start_competition(player_id,game_id):
     
     #For right now, prevent player from competing against itself
     #In future, prevent player from competing against any from the same user
-    other_players_query = 'SELECT upload_id, author_id, filename FROM Uploads ' \
-                          'WHERE type="Player" AND active="Active" AND ' \
-                          'game_id={0} AND upload_id<>{1} ' \
-                          'ORDER BY RAND()'.format(game_id,player_id)
-    other_players = query_db(other_players_query, -1)
+    other_players = get_other_players_for_game(game_id, player_id)
     
     if len(other_players) < (game['min_num_players'] - 1):
         flash("There aren't enough players! Wait for another user to join the game, or push one of your friends to!")
         return redirect(url_for('compete.game_info', game_id=game_id))
 
     num_challenged = random.randint(game['min_num_players']-1, min(len(other_players), game['max_num_players']-1))
-
     challenged = []
-
     for i in range(num_challenged):
         challenged.append(other_players.pop())
 
-    challenger_query = 'SELECT upload_id, author_id, filename FROM Uploads ' \
-                   'WHERE upload_id={0}'.format(player_id)
-    challenger = query_db(challenger_query, 1)
+    challenger = get_player_from_id(player_id)
     
-    compete(challenger, challenged, ref, game_id)
-    
-    return redirect(url_for('compete.game_info',game_id=game_id))
+    return compete(challenger, challenged, ref, game_id)
 
+
+def get_game_from_id(game_id):
+    query = 'SELECT min_num_players, max_num_players ' \
+           'FROM Games WHERE game_id={0}'.format(game_id)
+    return query_db(query, 1)
+
+def get_ref_for_game(game_id):
+    query = 'SELECT upload_id, filename FROM Uploads WHERE active="Active" ' \
+            'AND game_id={0} AND type="Ref" ORDER BY created_dt DESC LIMIT 1'.format(game_id)
+    return query_db(query, 1)
+
+def get_other_players_for_game(game_id, player_id):
+    query = 'SELECT upload_id, author_id, filename FROM Uploads ' \
+            'WHERE type="Player" AND active="Active" AND ' \
+            'game_id={0} AND upload_id<>{1} ' \
+            'ORDER BY RAND()'.format(game_id,player_id)
+    return query_db(query, -1)
+
+def get_player_from_id(player_id):
+    query = 'SELECT upload_id, author_id, filename FROM Uploads ' \
+            'WHERE upload_id={0}'.format(player_id)
+    return query_db(query, 1)
