@@ -6,7 +6,7 @@ from werkzeug.exceptions import abort
 from .db import query_db
 
 bp = Blueprint('compete', __name__)
-DOCUMENTATION_FOLDER = 'gaime/Games/'
+DOCUMENTATION_FOLDER = 'UserSubmissions/GameDescriptions/'
 
 @bp.route('/')
 def index():
@@ -38,11 +38,11 @@ def game_info(game_id):
                     'ORDER BY up.created_dt DESC'.format(user, game_id)
     players = query_db(players_query)
     
-    game_query = 'SELECT g.name, g.created_dt, g.max_num_players, u.username, ' \
+    game_query = 'SELECT g.author_id, g.name, g.created_dt, g.max_num_players, u.username, ' \
                  'g.min_num_players, g.doc_file from Games g INNER JOIN Users u ' \
                  'ON g.author_id=u.user_id WHERE g.game_id={0}'.format(game_id)
     game = query_db(game_query, 1)
-    doc_filename = DOCUMENTATION_FOLDER+game['doc_file']
+    doc_filename = DOCUMENTATION_FOLDER+str(game['author_id'])+'/'+game['doc_file']
     with open(doc_filename, 'r') as doc_file:
         game['documentation'] = doc_file.read()
 
