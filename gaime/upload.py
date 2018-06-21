@@ -67,14 +67,14 @@ def save_game(author_id, title, description, referee_code,
     ref_filename = secure_filename(time_str + title + ext)
     desc_filename = secure_filename(time_str + title + '.md')
     try:
-        with open(os.path.join(ref_dir, 'ref_filename')) as f:
+        with open(os.path.join(ref_dir, ref_filename), 'w+') as f:
             f.write(referee_code)
-        with open(os.path.join(desc_dir, 'desc_filename')) as f:
+        with open(os.path.join(desc_dir, desc_filename), 'w+') as f:
             f.write(description)
     except Exception as e:
         return e
 
-    success = insert_db(table='Games', commit=false,
+    success = insert_db(table='Games', commit=False,
                         name=title,
                         doc_file=desc_filename,
                         min_num_players=1,
@@ -82,7 +82,7 @@ def save_game(author_id, title, description, referee_code,
                         author_id=author_id)
     if not success:
         return "Transaction Error: unable to insert Game"
-    game_id = query_db('SELECT LAST_INSERT_ID()', 1)
+    game_id = query_db('SELECT LAST_INSERT_ID()', 1)['LAST_INSERT_ID()']
 
     success = insert_db(table='Uploads',
                         filename=ref_filename,
@@ -145,6 +145,6 @@ def upload_game():
                 flash(error)
             else:
                 flash('Game submitted!')
-                redirect(url_for('compete.index'))
+                return redirect(url_for('compete.index'))
 
     return render_template('upload/game.html')
