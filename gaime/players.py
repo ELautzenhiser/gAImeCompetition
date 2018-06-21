@@ -3,8 +3,8 @@ from flask import Blueprint, flash, g, request, redirect, url_for, render_templa
 from datetime import datetime
 from .db import query_db, insert_db, update_db, get_db_row
 
-PLAYER_FOLDER = 'gaime/Players'
-ARCHIVE_FOLDER = 'gaime/Archive/Players'
+PLAYER_FOLDER = 'UserSubmissions/Players/User_{0}/'
+ARCHIVE_FOLDER = 'UserSubmissions/Archive/Players/User_{0}'
 
 bp = Blueprint('players', __name__)
 
@@ -32,8 +32,8 @@ def archive_player_file(upload_id):
      user_id = player['author_id']
      filename = player['filename']
      
-     origin_folder = PLAYER_FOLDER + '/User_' + str(user_id)
-     destination_folder = ARCHIVE_FOLDER + '/User_' + str(user_id)
+     origin_folder = PLAYER_FOLDER.format(user_id)
+     destination_folder = ARCHIVE_FOLDER.format(user_id)
      try:
           os.makedirs(destination_folder)
      except OSError:

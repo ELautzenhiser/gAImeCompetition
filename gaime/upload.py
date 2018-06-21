@@ -4,7 +4,8 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 from .db import insert_db, query_db
 
-UPLOAD_FOLDER = 'UserSubmissions'
+PLAYER_FOLDER = 'UserSubmissions/Players/User_{0}'
+GAME_FOLDER = 'UserSubmissions/Games/User_{0}'
 ALLOWED_EXTENSIONS = set(['py', 'txt'])
 
 bp = Blueprint('upload', __name__, url_prefix='/upload')
@@ -14,7 +15,7 @@ def allowed_file(filename):
           filename.rsplit('.',1)[1].lower() in ALLOWED_EXTENSIONS
 
 def save_player_file(file, user, timestamp):
-    user_folder = UPLOAD_FOLDER+'/User_'+str(user)
+    user_folder = PLAYER_FOLDER.format(user)
     try:
         os.makedirs(user_folder)
     except OSError:
@@ -30,14 +31,11 @@ def save_player_file(file, user, timestamp):
 def save_player_db(filename, user, timestamp, game):
     time_str = timestamp.strftime('%Y-%m-%d %H:%M:%S')
     language = '1'
-    insert_statement = 'INSERT INTO Uploads (filename, language_id, game_id, author_id, created_dt, type) ' \
-                    'VALUES (\'{0}\', {1}, {2}, {3}, \'{4}\', \'Player\')'.format(filename, language, game, user, time_str)
     return insert_db(table='Uploads',
                      filename=filename, language_id=language, game_id=game,
                      author_id=user, created_dt=time_str, type='Player')
 
 def save_player(file, game):
-    #needs to be replaced with the actual user once we get the auth setup
     user = g.user['id']
     timestamp = datetime.now()    
     filename, error = save_player_file(file, user, timestamp)
@@ -49,11 +47,9 @@ def save_player(file, game):
 
 def save_game(author_id, title, description, referee_code,
               language_id):
-    ref_dir = UPLOAD_FOLDER + '/Referees/' + str(author_id)
-    desc_dir = UPLOAD_FOLDER + '/GameDescriptions/' + str(author_id)
+    game_dir = GAME_FOLDER.format(author_id)
     try:
-        os.makedirs(ref_dir)
-        os.makedirs(desc_dir)
+        os.makedirs(game_dir)
     except OSError as e:
         if e.errno != errno.EEXIST:
             return e
@@ -67,9 +63,9 @@ def save_game(author_id, title, description, referee_code,
     ref_filename = secure_filename(time_str + title + ext)
     desc_filename = secure_filename(time_str + title + '.md')
     try:
-        with open(os.path.join(ref_dir, ref_filename), 'w+') as f:
+        with open(os.path.join(game_dir, ref_filename), 'w+') as f:
             f.write(referee_code)
-        with open(os.path.join(desc_dir, desc_filename), 'w+') as f:
+        with open(os.path.join(game_dir, desc_filename), 'w+') as f:
             f.write(description)
     except Exception as e:
         return e

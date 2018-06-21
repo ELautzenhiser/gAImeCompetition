@@ -6,7 +6,7 @@ from .db import query_db, get_db_row
 import random
 
 bp = Blueprint('compete', __name__)
-DOCUMENTATION_FOLDER = 'UserSubmissions/GameDescriptions/'
+GAME_PATH = 'UserSubmissions/Games/Game_{0}/{1}'
 
 @bp.route('/')
 def index():
@@ -41,7 +41,7 @@ def game_info(game_id):
                  'g.min_num_players, g.doc_file, u.username from Games g INNER JOIN Users u ' \
                  'ON g.author_id=u.user_id WHERE g.game_id={0}'.format(game_id)
     game = query_db(game_query, 1)
-    doc_filename = DOCUMENTATION_FOLDER+str(game['author_id'])+'/'+game['doc_file']
+    doc_filename = GAME_PATH.format(game['game_id'],game['doc_file'])
     with open(doc_filename, 'r') as doc_file:
         game['documentation'] = doc_file.read()
 
