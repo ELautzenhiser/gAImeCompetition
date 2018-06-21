@@ -1,4 +1,4 @@
-import os
+import os, errno
 from flask import Flask, flash, g, request, redirect, url_for, render_template, Blueprint
 from werkzeug.utils import secure_filename
 from datetime import datetime
@@ -32,7 +32,9 @@ def save_player_db(filename, user, timestamp, game):
     language = '1'
     insert_statement = 'INSERT INTO Uploads (filename, language_id, game_id, author_id, created_dt, type) ' \
                     'VALUES (\'{0}\', {1}, {2}, {3}, \'{4}\', \'Player\')'.format(filename, language, game, user, time_str)
-    return insert_db(insert_statement)
+    return insert_db(table='Uploads',
+                     filename=filename, language_id=language, game_id=game,
+                     author_id=user, created_dt=time_str, type='Player')
 
 def save_player(file, game):
     #needs to be replaced with the actual user once we get the auth setup
@@ -45,7 +47,8 @@ def save_player(file, game):
     if not success:
         return 'Error saving to database.'
 
-def save_game(author_id, title, description, referee_code, language_id):
+def save_game(author_id, title, description, referee_code,
+              language_id):
     ref_dir = UPLOAD_FOLDER + '/Referees/' + str(author_id)
     desc_dir = UPLOAD_FOLDER + '/GameDescriptions/' + str(author_id)
     try:
@@ -71,15 +74,26 @@ def save_game(author_id, title, description, referee_code, language_id):
     except Exception as e:
         return e
 
-    success = insert_db(Uploads,
+    success = insert_db(table='Games', commit=false,
+                        name=title,
+                        doc_file=desc_filename,
+                        min_num_players=1,
+                        max_num_players=1,
+                        author_id=author_id)
+    if not success:
+        return "Transaction Error: unable to insert Game"
+    game_id = query_db('SELECT LAST_INSERT_ID()', 1)
+
+    success = insert_db(table='Uploads',
                         filename=ref_filename,
                         language_id=language_id,
-                        game_id=
-    success = insert_db(Uploads,
-                        filename,
+                        game_id=game_id,
+                        author_id=author_id,
+                        type='Ref')
+    if not success:
+        return "Transaction Error: unable to insert Upload"
 
-    
-    return(filename, None)
+    return None
         
     
 
@@ -112,12 +126,13 @@ def upload_file():
     games = query_db(query)
     return render_template('upload.html', games=games)
 
-@bp.route('/game', methods=['GET', 'POST']))
+@bp.route('/game', methods=['GET', 'POST'])
 def upload_game():
     if request.method == 'POST':
         title = request.form['title']
         description = request.form['description']
         referee_code = request.form['referee_code']
+        error = None
 
         if not title:
             error = 'Title is required.'
@@ -125,7 +140,11 @@ def upload_game():
         if error is not None:
             flash(error)
         else:
-            error = save_game(g.user['id'], title, description, referee_code)
-        return redirect(url_for('compete.index'))
+            error = save_game(g.user['id'], title, description, referee_code, 1)
+            if error:
+                flash(error)
+            else:
+                flash('Game submitted!')
+                redirect(url_for('compete.index'))
 
     return render_template('upload/game.html')

@@ -23,7 +23,9 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    g.user['id'] = 1   # default user. delete line once we have auth.
+    @app.before_request
+    def set_default_user():
+        g.user = {'id': 1}  # default user. delete line once we have auth.
 
     from . import db
     db.init_app(app)

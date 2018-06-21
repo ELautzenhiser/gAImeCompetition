@@ -70,25 +70,26 @@ def query_db(query, num_rows=-1):
      else:
           return cursor.fetchmany(num_rows)
 
-def insert_db(table, **kwargs):
+def insert_db(table, commit=True, **kwargs):
      keys = []
      values = []
-     for key, value in kwargs:
+     for key, value in kwargs.items():
           keys.append(key)
-          if isinstance(value, basestring):
+          if isinstance(value, str):
               values.append("'" + value + "'")
           else:
               values.append(str(value))
      key_string = '(' + ', '.join(keys) + ')'
      value_string = '(' + ', '.join(values) + ')'
      
-     transaction = 'INSERT INTO {1} {2} VALUES {3};'.format(
+     transaction = 'INSERT INTO {0} {1} VALUES {2};'.format(
                           table, key_string, value_string)
 
      db = open_db()
      with db.cursor() as cursor:
           success = cursor.execute(transaction)
-     db.commit()
+     if commit:
+         db.commit()
      return success
 
 @click.command('init-db')
