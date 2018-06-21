@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for
+    Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
 from werkzeug.exceptions import abort
 
@@ -24,6 +24,7 @@ def index():
 @bp.route('/game_info/<int:game_id>', methods=('POST','GET'))
 def game_info(game_id):
     #user to be added
+    print(dir(session))
     user = 1
     players_query = 'SELECT up.upload_id, ' \
                     'SUBSTRING(up.filename, 16) as filename, ' \
@@ -31,7 +32,7 @@ def game_info(game_id):
                     'COALESCE(SUM(m.points),0) as score ' \
                     'FROM Uploads up inner join Languages l ' \
                     'ON up.language_id = l.language_id ' \
-                    'LEFT JOIN Matches m ON up.upload_id=m.winner_id ' \
+                    'LEFT JOIN Match_players m ON up.upload_id=m.player_id ' \
                     'WHERE up.author_id={0} AND up.active=\'Active\' ' \
                     'AND up.type=\'Player\' AND up.game_id={1} ' \
                     'GROUP BY up.upload_id ' \
@@ -49,7 +50,7 @@ def game_info(game_id):
     top_query = 'SELECT COALESCE(SUM(m.points),0) score, up.upload_id, u.username, ' \
                 'up.created_dt ' \
                 'FROM Uploads up INNER JOIN Users u on up.author_id=u.user_id ' \
-                'LEFT JOIN Matches m on up.upload_id=m.winner_id ' \
+                'LEFT JOIN Match_players m on up.upload_id=m.player_id ' \
                 'WHERE up.type=\'Player\' AND up.active=\'Active\' ' \
                 'AND up.game_id={0} GROUP BY up.upload_id ' \
                 'ORDER BY score DESC limit 1'.format(game_id)
@@ -58,3 +59,5 @@ def game_info(game_id):
 
     return render_template('compete/game_info.html',game=game, players=players,
                            top_player=top_player, user=user)
+
+

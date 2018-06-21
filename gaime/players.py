@@ -19,7 +19,7 @@ def view_players():
                      'FROM Uploads up inner join Languages l ' \
                      'ON up.language_id = l.language_id ' \
                      'INNER JOIN Games g ON up.game_id = g.game_id ' \
-                     'LEFT JOIN Matches m ON up.upload_id=m.winner_id ' \
+                     'LEFT JOIN Match_players m ON up.upload_id=m.player_id ' \
                      'WHERE up.author_id={0} AND up.active=\'Active\' ' \
                      'AND up.type=\'Player\' GROUP BY up.upload_id ' \
                      'ORDER BY up.created_dt DESC'.format(user)
