@@ -59,6 +59,14 @@ def init_db():
                cursor.execute(statement)
      db.commit()
 
+def commit_db():
+     db = open_db()
+     db.commit()
+
+def rollback_db():
+     db = open_db()
+     db.rollback()
+
 def query_db(query, num_rows=-1):
      db = open_db()
      with db.cursor(pymysql.cursors.DictCursor) as cursor:

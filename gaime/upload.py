@@ -2,10 +2,10 @@ import os, errno
 from flask import Flask, flash, g, request, redirect, url_for, render_template, Blueprint
 from werkzeug.utils import secure_filename
 from datetime import datetime
-from .db import insert_db, query_db
+from .db import insert_db, query_db, rollback_db, commit_db
 
 PLAYER_FOLDER = 'UserSubmissions/Players/User_{0}'
-GAME_FOLDER = 'UserSubmissions/Games/User_{0}'
+GAME_FOLDER = 'UserSubmissions/Games/Game_{0}'
 ALLOWED_EXTENSIONS = set(['py', 'txt'])
 
 bp = Blueprint('upload', __name__, url_prefix='/upload')
@@ -47,28 +47,9 @@ def save_player(file, game):
 
 def save_game(author_id, title, description, referee_code,
               language_id):
-    game_dir = GAME_FOLDER.format(author_id)
-    try:
-        os.makedirs(game_dir)
-    except OSError as e:
-        if e.errno != errno.EEXIST:
-            return e
-    except Exception as e:
-        return e
 
-    time_str = datetime.now().strftime('%Y%m%d%H%M%S')
-    extension = ""
-    if language_id == 1:
-        ext = '.py'
-    ref_filename = secure_filename(time_str + title + ext)
-    desc_filename = secure_filename(time_str + title + '.md')
-    try:
-        with open(os.path.join(game_dir, ref_filename), 'w+') as f:
-            f.write(referee_code)
-        with open(os.path.join(game_dir, desc_filename), 'w+') as f:
-            f.write(description)
-    except Exception as e:
-        return e
+    desc_filename = "doc.md"
+    ref_filename = "ref.py" 
 
     success = insert_db(table='Games', commit=False,
                         name=title,
@@ -77,21 +58,41 @@ def save_game(author_id, title, description, referee_code,
                         max_num_players=1,
                         author_id=author_id)
     if not success:
+        rollback_db()
         return "Transaction Error: unable to insert Game"
     game_id = query_db('SELECT LAST_INSERT_ID()', 1)['LAST_INSERT_ID()']
 
-    success = insert_db(table='Uploads',
+    success = insert_db(table='Uploads', commit=False,
                         filename=ref_filename,
                         language_id=language_id,
                         game_id=game_id,
                         author_id=author_id,
                         type='Ref')
     if not success:
+        rollback_db()
         return "Transaction Error: unable to insert Upload"
 
+    game_dir = GAME_FOLDER.format(game_id)
+
+    try:
+        os.makedirs(game_dir)
+    except Exception as e:
+        if e.errno != errno.EEXIST:
+            rollback_db()
+            return e
+
+    try:
+        with open(os.path.join(game_dir, ref_filename), 'w+') as f:
+            f.write(referee_code)
+        with open(os.path.join(game_dir, desc_filename), 'w+') as f:
+            f.write(description)
+    except Exception as e:
+        rollback_db()
+        return e
+
+    commit_db()
+
     return None
-        
-    
 
 @bp.route('/upload', methods=['GET', 'POST'])
 def upload_file():
