@@ -43,3 +43,7 @@ footer {
 	margin-right: auto;
 	padding-top: 50px;
 }
+
+textarea {
+    display: block;
+}
