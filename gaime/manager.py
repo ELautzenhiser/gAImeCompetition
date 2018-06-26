@@ -50,6 +50,9 @@ def run(outfile_dir, outfile_prefix, referee_cmd, *player_cmds):
     print(len(players), file=ref.stdin)
     ref.stdin.flush()
 
+    def invalid_argument(arg, cmd):
+        log("Invalid argument <" + arg + "> in command: " + cmd)
+
     while True:
         ref_output = None
         try:
@@ -70,10 +73,9 @@ def run(outfile_dir, outfile_prefix, referee_cmd, *player_cmds):
                     try:
                         arg = int(arg[1:])
                     except ValueError as e:
-                        log("Invalid argument <" + arg + "> in command: "
-                            + ref_output)
+                        invalid_argument(arg, ref_output)
                         continue
-                    if arg in range(len(players)):
+                    if 0 <= arg < len(players):
                         out_pipes.append(players[arg])
                     continue
                 if arg == 'LOG' or arg == 'L':
@@ -82,8 +84,7 @@ def run(outfile_dir, outfile_prefix, referee_cmd, *player_cmds):
                 try:
                     N = int(arg)
                 except:
-                    log("Invalid argument <" + arg + "> in command: "
-                        + ref_output)
+                    invalid_argument(arg, ref_output)
             if N is None or N == 0:
                 continue
             for i in range(N):
@@ -97,6 +98,41 @@ def run(outfile_dir, outfile_prefix, referee_cmd, *player_cmds):
                     return 4
                 for pipe in out_pipes:
                     print(message, file=pipe, end="")
+        if ref_output[:6] == "LISTEN":
+            arg = ref_output.split()[1]
+            if arg[0] != 'P':
+                invalid_argument(arg, ref_output)
+                break
+
+            p = None
+            try:
+                p = int(arg[1:])
+            except:
+                invalid_argument(arg, ref_output)
+                break
+            if p < 0 or p >= len(players):
+                invalid_argument(arg, ref_output)
+                break
+
+            N = None
+            try:
+                N = int(ref_output.split()[2])
+            except:
+                invalid_argument(arg, ref_output)
+                break
+
+            for i in range(N):
+                message = players[p].stdout.readline()
+                print(message, file=ref.stdin, end="")
+
+        if ref_output[:8] == 'GAMEOVER':
+            args = ref_output.split()[1:]
+            log('Game Ended!')
+            for i in range(len(args)):
+                log('Player ' + str(i) + ': ' + args[i])
+            return 0
+
+        log("Invalid command: " + ref_output)
 
 if __name__ == '__main__':
     files = sys.argv
