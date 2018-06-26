@@ -94,7 +94,7 @@ def save_game(author_id, title, description, referee_code,
 
     return None
 
-@bp.route('/upload', methods=['GET', 'POST'])
+@bp.route('/player', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
         if 'file' not in request.files:
