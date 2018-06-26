@@ -75,8 +75,8 @@ def run(outfile_dir, outfile_prefix, referee_cmd, *player_cmds):
                     except ValueError as e:
                         invalid_argument(arg, ref_output)
                         continue
-                    if 0 <= arg < len(players):
-                        out_pipes.append(players[arg].stdin)
+                    if 0 < arg <= len(players):
+                        out_pipes.append(players[arg-1].stdin)
                     continue
                 if arg == 'LOG' or arg == 'L':
                     out_pipes.append(log_file)
@@ -114,7 +114,7 @@ def run(outfile_dir, outfile_prefix, referee_cmd, *player_cmds):
             except:
                 invalid_argument(arg, ref_output)
                 break
-            if p < 0 or p >= len(players):
+            if p < 1 or p > len(players):
                 invalid_argument(arg, ref_output)
                 break
 
@@ -126,7 +126,7 @@ def run(outfile_dir, outfile_prefix, referee_cmd, *player_cmds):
                 break
 
             for i in range(N):
-                message = players[p].stdout.readline()
+                message = players[p-1].stdout.readline()
                 print(message, file=ref.stdin, end="")
                 ref.stdin.flush()
 
@@ -135,8 +135,9 @@ def run(outfile_dir, outfile_prefix, referee_cmd, *player_cmds):
         if ref_output[:8] == 'GAMEOVER':
             args = ref_output.split()[1:]
             log('Game Ended!')
+            print(args)
             for i in range(len(args)):
-                log('Player ' + str(i) + ': ' + args[i])
+                log('Player ' + str(i + 1) + ': ' + args[i])
             return 0
 
         log("Invalid command: " + ref_output)
@@ -153,6 +154,8 @@ if __name__ == '__main__':
     date_str = datetime.now().strftime('%Y%b%d%H%M%S')
 
     error = run('manager_tests', date_str, ref_cmd, *player_cmds)
+
+    print('Run function completed!')
 
     if error == 1:
         print("Referee stopped output without a gameover. Game ended.")

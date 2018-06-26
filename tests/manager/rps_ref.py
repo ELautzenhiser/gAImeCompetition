@@ -2,7 +2,7 @@ def log(m):
     print('SEND LOG 1')
     print(m)
 
-N = input()
+N = int(input())
 if N != 2:
     log("Not the right number of players (" + str(N) + "). Should be two!")
 
@@ -11,10 +11,6 @@ num_rounds = 21
 log("ROCK, PAPER, SCISSORS")
 log("=====================")
 log("Best to " + str(num_rounds) + "!")
-
-print('SEND P1 P2 1')
-print(num_rounds)
-
 
 def compare(a, b):
     a = a.upper()
@@ -62,21 +58,17 @@ while True:
     result = compare(m1, m2)
     if result < 0:
         score2 += 1
-        print('SEND P1 1')
-        print('LOSS', score1, score2)
-        print('SEND P2 1')
-        print('WIN', score2, score1)
     elif result > 0:
         score1 += 1
-        print('SEND P1 1')
-        print('WIN ', score1, score2)
-        print('SEND P2 1')
-        print('LOSS', score2, score1)
-    else:
-        print('SEND P1 P2')
-        print('TIE') 
     log('Round #' + str(i) + ': ' + m1 + ' ' + m2)
+
     if score1 > num_rounds / 2:
+        print('SEND P1 P2 1')
+        print('GAMEOVER')
         print('GAMEOVER WIN LOSE')
+        break
     if score2 > num_rounds / 2:
+        print('SEND P1 P2 1')
+        print('GAMEOVER')
         print('GAMEOVER LOSE WIN')
+        break
