@@ -76,7 +76,7 @@ def run(outfile_dir, outfile_prefix, referee_cmd, *player_cmds):
                         invalid_argument(arg, ref_output)
                         continue
                     if 0 <= arg < len(players):
-                        out_pipes.append(players[arg])
+                        out_pipes.append(players[arg].stdin)
                     continue
                 if arg == 'LOG' or arg == 'L':
                     out_pipes.append(log_file)
@@ -98,6 +98,9 @@ def run(outfile_dir, outfile_prefix, referee_cmd, *player_cmds):
                     return 4
                 for pipe in out_pipes:
                     print(message, file=pipe, end="")
+
+            continue
+
         if ref_output[:6] == "LISTEN":
             arg = ref_output.split()[1]
             if arg[0] != 'P':
@@ -124,6 +127,8 @@ def run(outfile_dir, outfile_prefix, referee_cmd, *player_cmds):
             for i in range(N):
                 message = players[p].stdout.readline()
                 print(message, file=ref.stdin, end="")
+
+            continue
 
         if ref_output[:8] == 'GAMEOVER':
             args = ref_output.split()[1:]
