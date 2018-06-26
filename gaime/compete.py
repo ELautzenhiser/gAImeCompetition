@@ -15,7 +15,7 @@ def index():
                  'g.created_dt, COALESCE(up.count,0) as num_competitors ' \
                  'FROM Games g INNER JOIN Users u ON g.author_id = u.user_id ' \
                  'LEFT JOIN (SELECT count(upload_id) as count, ' \
-                 'game_id from Uploads where active="Active" and ' \
+                 'game_id from Uploads where status="Published" and ' \
                  'type="Player" GROUP BY game_id) up on g.game_id=up.game_id ' \
                  'GROUP BY g.game_id ORDER BY g.game_id DESC '
     games = query_db(game_query, -1)
@@ -31,7 +31,7 @@ def game_info(game_id):
                     'FROM Uploads up inner join Languages l ' \
                     'ON up.language_id = l.language_id ' \
                     'LEFT JOIN Match_players m ON up.upload_id=m.player_id ' \
-                    'WHERE up.author_id={0} AND up.active=\'Active\' ' \
+                    'WHERE up.author_id={0} AND up.status="Published" ' \
                     'AND up.type=\'Player\' AND up.game_id={1} ' \
                     'GROUP BY up.upload_id ' \
                     'ORDER BY up.created_dt DESC'.format(user_id, game_id)
@@ -49,7 +49,7 @@ def game_info(game_id):
                 'up.created_dt ' \
                 'FROM Uploads up INNER JOIN Users u on up.author_id=u.user_id ' \
                 'LEFT JOIN Match_players m on up.upload_id=m.player_id ' \
-                'WHERE up.type=\'Player\' AND up.active=\'Active\' ' \
+                'WHERE up.type="Player" AND up.status="Published" ' \
                 'AND up.game_id={0} GROUP BY up.upload_id ' \
                 'ORDER BY score DESC limit 1'.format(game_id)
     
@@ -97,13 +97,13 @@ def start_competition(player_id,game_id):
 
 
 def get_ref_for_game(game_id):
-    query = 'SELECT upload_id, filename FROM Uploads WHERE active="Active" ' \
+    query = 'SELECT upload_id, filename FROM Uploads WHERE status="Published" ' \
             'AND game_id={0} AND type="Ref" ORDER BY created_dt DESC LIMIT 1'.format(game_id)
     return query_db(query, 1)
 
 def get_other_players_for_game(game_id, player_id):
     query = 'SELECT upload_id, author_id, filename FROM Uploads ' \
-            'WHERE type="Player" AND active="Active" AND ' \
+            'WHERE type="Player" AND status="Published" AND ' \
             'game_id={0} AND upload_id<>{1} ' \
             'ORDER BY RAND()'.format(game_id,player_id)
     return query_db(query, -1)

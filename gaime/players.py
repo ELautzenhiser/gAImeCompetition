@@ -19,8 +19,8 @@ def view_players():
                      'ON up.language_id = l.language_id ' \
                      'INNER JOIN Games g ON up.game_id = g.game_id ' \
                      'LEFT JOIN Match_players m ON up.upload_id=m.player_id ' \
-                     'WHERE up.author_id={0} AND up.active=\'Active\' ' \
-                     'AND up.type=\'Player\' GROUP BY up.upload_id ' \
+                     'WHERE up.author_id={0} AND up.status="Published" ' \
+                     'AND up.type="Player" GROUP BY up.upload_id ' \
                      'ORDER BY up.created_dt DESC'.format(user_id)
      
      players = query_db(players_query, -1)
@@ -44,7 +44,7 @@ def archive_player_file(upload_id):
           return e
 
 def deactivate_player(upload_id):
-     update_statement = 'UPDATE Uploads SET active=\'Inactive\' ' \
+     update_statement = 'UPDATE Uploads SET status="Deleted" ' \
                   'WHERE upload_id={0}'.format(upload_id)
      
      return update_db(update_statement)
