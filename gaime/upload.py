@@ -32,8 +32,13 @@ def save_player_db(filename, user, timestamp, game):
     time_str = timestamp.strftime('%Y-%m-%d %H:%M:%S')
     language = '1'
     return insert_db(table='Uploads',
-                     filename=filename, language_id=language, game_id=game,
-                     author_id=user, created_dt=time_str, type='Player')
+                     filename=filename,
+                     language_id=language,
+                     game_id=game,
+                     author_id=user,
+                     created_dt=time_str,
+                     type='Player',
+                     status='Published')
 
 def save_player(file, game):
     user = g.user['id']
@@ -56,7 +61,8 @@ def save_game(author_id, title, description, referee_code,
                         doc_file=desc_filename,
                         min_num_players=1,
                         max_num_players=1,
-                        author_id=author_id)
+                        author_id=author_id,
+                        status='Published')
     if not success:
         rollback_db()
         return "Transaction Error: unable to insert Game"
@@ -67,7 +73,8 @@ def save_game(author_id, title, description, referee_code,
                         language_id=language_id,
                         game_id=game_id,
                         author_id=author_id,
-                        type='Ref')
+                        type='Ref',
+                        status='Published')
     if not success:
         rollback_db()
         return "Transaction Error: unable to insert Upload"
