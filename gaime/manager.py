@@ -98,6 +98,7 @@ def run(outfile_dir, outfile_prefix, referee_cmd, *player_cmds):
                     return 4
                 for pipe in out_pipes:
                     print(message, file=pipe, end="")
+                    pipe.flush()
 
             continue
 
@@ -127,6 +128,7 @@ def run(outfile_dir, outfile_prefix, referee_cmd, *player_cmds):
             for i in range(N):
                 message = players[p].stdout.readline()
                 print(message, file=ref.stdin, end="")
+                ref.stdin.flush()
 
             continue
 
