@@ -26,8 +26,10 @@
     <label for="description">Description</label>
     <textarea name="description" id="description">{{ request.form['description'] }}</textarea>
     <br>
+	<input type=file id="referee_file">
     <label for="referee_code">Code</label>
     <textarea name="referee_code" id="referee_code">{{ request.form['referee_code'] }}</textarea>
+	<div id="referee_ace"></div>
     <input type="submit" value="Save">
   </form>
 
@@ -38,7 +40,7 @@
       var textarea = document.querySelector("form textarea[name='" + name + "']");
 
       // create ace editor
-      var editor = ace.edit()
+      var editor = ace.edit("referee_ace")
       editor.container.style.height = "200px"
       editor.container.style.width = "100%"
       editor.session.setValue(textarea.value)
@@ -54,6 +56,24 @@
       }, true)
     }
     createEditor("referee_code")
+	
+	function handleFileSelect(evt) {
+    var files = evt.target.files
+    f = files[0]
+
+    var reader = new FileReader()
+
+    reader.onload = (function(theFile) {
+        return function(e) {
+			var editor = ace.edit("referee_ace")
+			var session = editor.getSession()
+          session.setValue( e.target.result )
+        }
+      })(f)
+
+      reader.readAsText(f)
+  }
+	document.getElementById('referee_file').addEventListener('change', handleFileSelect, false)
   </script>
 {% endblock %}
 
