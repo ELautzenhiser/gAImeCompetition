@@ -102,33 +102,33 @@ def save_game(author_id, title, description, referee_code,
     return None
 
 @bp.route('/player', methods=['GET', 'POST'])
-def upload_file():
+def upload_player():
     if request.method == 'POST':
         if 'file' not in request.files:
             flash('You must choose a file to upload')
-            return redirect(url_for('upload.upload_file'))
+            return redirect(url_for('upload.upload_player'))
         file = request.files['file']
         if 'game' not in request.form:
             flash('Please choose a game')
-            return redirect(url_for('upload.upload_file'))
+            return redirect(url_for('upload.upload_player'))
         game = request.form['game']
         if file.filename == '':
             flash('No selected file')
             return redirect(url_for('compete.index'))
         if file and not allowed_file(file.filename):
             flash('Please upload an approved file type!')
-            return redirect(url_for('upload.upload_file'))
+            return redirect(url_for('upload.upload_player'))
         if file and allowed_file(file.filename):
             error = save_player(file, game)
             if error:
                 flash(error)
-                return redirect(url_for('upload_file'))
+                return redirect(url_for('upload_player'))
             else:
                 flash('File successfully uploaded!')
                 return redirect(url_for('compete.index'))
     query = 'SELECT game_id, name FROM Games'
     games = query_db(query)
-    return render_template('upload.html', games=games)
+    return render_template('upload/player.html', games=games)
 
 @bp.route('/game', methods=['GET', 'POST'])
 def upload_game():
@@ -150,5 +150,4 @@ def upload_game():
             else:
                 flash('Game submitted!')
                 return redirect(url_for('compete.index'))
-
     return render_template('upload/game.html')
