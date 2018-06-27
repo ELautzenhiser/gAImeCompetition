@@ -2,9 +2,22 @@ import subprocess
 import sys
 import os, errno
 from datetime import datetime
+from threading import Timer
 
 def end_processes(*processes):
     pass
+
+def kill(process):
+    process.kill()
+    print('Killed "' + " ".join(process.args) + '" due to timeout.')
+
+def queryProcess(p, timeout = 1.0):
+    t = Timer(timeout, kill, [p])
+    t.start()
+    output = None
+    output = p.stdout.readline()
+    t.cancel()
+    return output
 
 def run(outfile_dir, outfile_prefix, referee_cmd, *player_cmds):
     try:
@@ -56,7 +69,7 @@ def run(outfile_dir, outfile_prefix, referee_cmd, *player_cmds):
     while True:
         ref_output = None
         try:
-            ref_output = ref.stdout.readline()
+            ref_output = queryProcess(ref, 2.0)
             if not ref_output:
                 return 1
         except Exception as e:
@@ -90,7 +103,7 @@ def run(outfile_dir, outfile_prefix, referee_cmd, *player_cmds):
             for i in range(N):
                 message = None
                 try:
-                    message = ref.stdout.readline()
+                    message = queryProcess(ref, 2.0)
                     if not message:
                         return 4
                 except Exception as e:
@@ -126,7 +139,7 @@ def run(outfile_dir, outfile_prefix, referee_cmd, *player_cmds):
                 break
 
             for i in range(N):
-                message = players[p-1].stdout.readline()
+                message = queryProcess(players[p-1], 2.0)
                 print(message, file=ref.stdin, end="")
                 ref.stdin.flush()
 
