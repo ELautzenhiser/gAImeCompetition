@@ -38,7 +38,7 @@ def save_player_db(filename, user, timestamp, game):
                      author_id=user,
                      created_dt=time_str,
                      type='Player',
-                     status='Published')
+                     status='Unpublished')
 
 def save_player(file, game):
     user = g.user['id']
