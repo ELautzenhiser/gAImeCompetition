@@ -46,11 +46,42 @@ def archive_player_file(upload_id):
           return e
 
      
+def get_player_name(filename):
+     name = os.path.splitext(os.path.basename(filename))[0][15:]
+     return name
+
+def get_player_file(user_id, filename):
+     folder = PLAYER_FOLDER.format(user_id)
+     return os.path.join(folder, filename)
+
 def change_player_status(upload_id,status):
      statement = 'Update Uploads SET status="{0}" WHERE ' \
                  'upload_id={1}'.format(status,upload_id)
      return update_db(statement)
 
+@bp.route('/<int:upload_id>/edit', methods=('POST','GET'))
+def edit_player(upload_id):
+     player = get_db_row('Uploads', upload_id)
+     filename = get_player_file(player['author_id'], player['filename'])
+     if request.method == 'GET':
+          player['name'] = get_player_name(player['filename'])
+          try:
+               with open(filename, 'r') as file:
+                    player['code'] = file.read()
+          except Exception as e:
+               flash(str(e))
+               player['code'] = ''
+          return render_template('edit_player.html', player=player)
+
+     elif request.method == 'POST':
+          player = get_db_row('Uploads', upload_id)
+          filename = get_player_file(player['author_id'], player['filename'])
+          try:
+               with open(filename, 'w') as file:
+                    file.write(request.form['code'])
+          except Exception as e:
+               flash(str(e))
+          return redirect(url_for('players.view_players'))
 
 @bp.route('/<int:upload_id>/retire', methods=('POST',))
 def retire_player(upload_id):

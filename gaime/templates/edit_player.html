@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block header %}
+	<h1>{% block title %}Edit Player{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+	<h3>{{ player['name'] }}</h3>
+	<form method=post enctype=multipart/form-data>
+		<textarea name="code" id="code">{{ player['code'] }}</textarea>
+		<div id="player_ace"></div>
+		<br>
+		<input type=submit value=Save action="{{ url_for('players.edit_player', upload_id=player['upload_id'])}}">
+    </form>
+
+  <script src="/static/js/lib/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+  <script>
+    function createEditor(name) {
+      // find the textarea
+      var textarea = document.querySelector("form textarea[name='" + name + "']");
+
+      // create ace editor
+      var editor = ace.edit("player_ace")
+      editor.container.style.height = "200px"
+      editor.container.style.width = "100%"
+      editor.session.setValue(textarea.value)
+      // replace textarea with ace
+      textarea.parentNode.insertBefore(editor.container, textarea)
+      textarea.style.display = "none"
+      // find the parent form and add submit event listener
+      var form = textarea
+      while (form && form.localName != "form") form = form.parentNode
+      form.addEventListener("submit", function() {
+        // update value of textarea to match value in ace
+        textarea.value = editor.getValue()
+      }, true)
+    }
+    createEditor("code")
+	
+	function handleFileSelect(evt) {
+    var files = evt.target.files
+    f = files[0]
+	if (document.getElementById('name').value == '') {
+		document.getElementById('name').value=f.name.substring(0, f.name.lastIndexOf('.'))
+	}
+    var reader = new FileReader()
+
+    reader.onload = (function(theFile) {
+        return function(e) {
+			var editor = ace.edit("player_ace")
+			var session = editor.getSession()
+          session.setValue( e.target.result )
+        }
+      })(f)
+
+      reader.readAsText(f)
+  }
+	document.getElementById('player_file').addEventListener('change', handleFileSelect, false)
+  </script>
+{% endblock %}
