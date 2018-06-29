@@ -1,26 +1,16 @@
 {% extends 'base.html' %}
 
 {% block header %}
-	<h1>{% block title %}Upload{% endblock %}</h1>
+	<h1>{% block title %}Edit Player{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-	<p>At this time, we support Python 3.</p>
+	<h3>{{ player['name'] }}</h3>
 	<form method=post enctype=multipart/form-data>
-		<label for="name">Name</label>
-		<input name="name" id="name" required>
-		<br>
-		<br>
-		<input type=file id='player_file'>
-		<select id=game name=game>
-			{% for game in games %}
-				<option value="{{ game['game_id'] }}">{{ game['name'] }}</option>
-			{% endfor %}
-		<label for="player_code">Code</label>
-		<textarea name="player_code" id="player_code">{{ request.form['player_code'] }}</textarea>
+		<textarea name="code" id="code">{{ player['code'] }}</textarea>
 		<div id="player_ace"></div>
 		<br>
-		<input type=submit value=Save>
+		<input type=submit value=Save action="{{ url_for('players.edit_player', upload_id=player['upload_id'])}}">
     </form>
 
   <script src="/static/js/lib/ace/ace.js" type="text/javascript" charset="utf-8"></script>
@@ -45,7 +35,7 @@
         textarea.value = editor.getValue()
       }, true)
     }
-    createEditor("player_code")
+    createEditor("code")
 	
 	function handleFileSelect(evt) {
     var files = evt.target.files

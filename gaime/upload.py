@@ -14,16 +14,17 @@ def allowed_file(filename):
     return '.' in filename and \
           filename.rsplit('.',1)[1].lower() in ALLOWED_EXTENSIONS
 
-def save_player_file(file, user, timestamp):
+def save_player_file(name, code, user, timestamp):
     user_folder = PLAYER_FOLDER.format(user)
     try:
         os.makedirs(user_folder)
     except OSError:
         pass
     time_str = timestamp.strftime('%Y%m%d%H%M%S')
-    filename = time_str+'_'+secure_filename(file.filename)
+    filename = time_str+'_'+name+'.py'
     try:
-        file.save(os.path.join(user_folder, filename))
+        with open(os.path.join(user_folder, filename), 'w') as file:
+            file.write(code)
     except Exception as e:
         return (None, e)
     return (filename, None)
@@ -38,12 +39,12 @@ def save_player_db(filename, user, timestamp, game):
                      author_id=user,
                      created_dt=time_str,
                      type='Player',
-                     status='Published')
+                     status='Unpublished')
 
-def save_player(file, game):
+def save_player(code, name, game):
     user = g.user['id']
     timestamp = datetime.now()    
-    filename, error = save_player_file(file, user, timestamp)
+    filename, error = save_player_file(name, code, user, timestamp)
     if error:
         return 'Error saving file: '+str(error)
     success = save_player_db(filename, user, timestamp, game)
@@ -104,28 +105,25 @@ def save_game(author_id, title, description, referee_code,
 @bp.route('/player', methods=['GET', 'POST'])
 def upload_player():
     if request.method == 'POST':
-        if 'file' not in request.files:
-            flash('You must choose a file to upload')
+        if request.form['player_code'] == '':
+            flash('Your player must have some code!')
             return redirect(url_for('upload.upload_player'))
-        file = request.files['file']
+        code = request.form['player_code']
+        if request.form['name'] == '':
+            flash('Your player must have a name!')
+            return redirect(url_for('upload.upload_player'))
+        name = request.form['name']
         if 'game' not in request.form:
             flash('Please choose a game')
             return redirect(url_for('upload.upload_player'))
         game = request.form['game']
-        if file.filename == '':
-            flash('No selected file')
+        error = save_player(code, name, game)
+        if error:
+            flash(error)
+            return redirect(url_for('upload_player'))
+        else:
+            flash('Player successfully saved!')
             return redirect(url_for('compete.index'))
-        if file and not allowed_file(file.filename):
-            flash('Please upload an approved file type!')
-            return redirect(url_for('upload.upload_player'))
-        if file and allowed_file(file.filename):
-            error = save_player(file, game)
-            if error:
-                flash(error)
-                return redirect(url_for('upload_player'))
-            else:
-                flash('File successfully uploaded!')
-                return redirect(url_for('compete.index'))
     query = 'SELECT game_id, name FROM Games'
     games = query_db(query)
     return render_template('upload/player.html', games=games)

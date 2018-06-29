@@ -6,7 +6,7 @@
 
 {% block content %}
 	<a class="button" href="{{ url_for('upload.upload_player') }}">Upload a New Player</a>
-  <h2>Available Players</h2>
+  <h2>Players</h2>
   {% for player in player_dict %}
     <article class="player">
       <header>
@@ -16,10 +16,21 @@
 			<li>Game: {{ player['game'] }}</li>
 			<li>Language: {{ player['language'] }}</li>
 			<li>Created: {{ player['created_dt'].strftime('%Y-%m-%d %H:%M:%S') }}</li>
+			<li>Status: {{ player['status'] }}</li>
 			<li>Score: {{ player['score'] }}</li>
-			<li><form action="{{ url_for('players.delete', upload_id=player['upload_id']) }}" method='post'>
-					<input class='danger' type='submit' value='Delete' onclick="return confirm('Are you sure?');">
+			{% if player['status']=='Unpublished' %}
+				<li><form action="{{ url_for('players.publish_player', upload_id=player['upload_id']) }}" method='post'>
+					<input type='submit' value='Publish'>
 				</form></li>
+				<li><form action="{{ url_for('players.edit_player', upload_id=player['upload_id']) }}" method='get'>
+					<input type='submit' value='Edit'>
+				</form></li>
+			{% endif %}
+			{% if player['status']!='Retired' %}
+				<li><form action="{{ url_for('players.retire_player', upload_id=player['upload_id']) }}" method='post'>
+					<input class='danger' type='submit' value='Retire' onclick="return confirm('Are you sure?');">
+				</form></li>
+			{% endif %}
 		  </ul>
         </div>
       </header>
