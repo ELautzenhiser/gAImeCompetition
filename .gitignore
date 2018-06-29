@@ -1,3 +1,8 @@
+# User submissions do not need to be stored in version control
+UserSubmissions/
+*manager_tests/
+tests/manager/manager.py
+
 # Taken from the python section of https://github.com/github/gitignore
 
 # Byte-compiled / optimized / DLL files
