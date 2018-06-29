@@ -78,7 +78,8 @@ def edit_player(upload_id):
           filename = get_player_file(player['author_id'], player['filename'])
           try:
                with open(filename, 'w') as file:
-                    file.write(request.form['code'])
+                    code_lines = request.form['code'].split('\n')
+                    file.writelines(code_lines)
           except Exception as e:
                flash(str(e))
           return redirect(url_for('players.view_players'))

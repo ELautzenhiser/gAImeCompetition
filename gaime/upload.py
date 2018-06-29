@@ -24,7 +24,8 @@ def save_player_file(name, code, user, timestamp):
     filename = time_str+'_'+name+'.py'
     try:
         with open(os.path.join(user_folder, filename), 'w') as file:
-            file.write(code)
+            code_lines = code.split('\n')
+            file.writelines(code_lines)
     except Exception as e:
         return (None, e)
     return (filename, None)
@@ -91,7 +92,8 @@ def save_game(author_id, title, description, referee_code,
 
     try:
         with open(os.path.join(game_dir, ref_filename), 'w+') as f:
-            f.write(referee_code)
+            code_lines = referee_code.split('\n')
+            f.writelines(code_lines)
         with open(os.path.join(game_dir, desc_filename), 'w+') as f:
             f.write(description)
     except Exception as e:
