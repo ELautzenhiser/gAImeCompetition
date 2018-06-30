@@ -3,6 +3,7 @@ from flask import Flask, flash, g, request, redirect, url_for, render_template, 
 from werkzeug.utils import secure_filename
 from datetime import datetime
 from .db import insert_db, query_db, rollback_db, commit_db
+from .security.input_checks import check_name
 
 PLAYER_FOLDER = 'UserSubmissions/Players/User_{0}'
 GAME_FOLDER = 'UserSubmissions/Games/Game_{0}'
@@ -103,26 +104,34 @@ def save_game(author_id, title, description, referee_code,
     commit_db()
 
     return None
-
+def check_player_input(name, code, game):
+    error = ''
+    if name == '':
+        error += 'Your player must have a name!\n'
+    else:
+        error += check_name(name)
+    if code == '':
+        error += 'Your player must have some code!\n'
+    if game == '':
+        error += 'Please choose a game.\n'
+    return error
+    
 @bp.route('/player', methods=['GET', 'POST'])
 def upload_player():
     if request.method == 'POST':
-        if request.form['player_code'] == '':
-            flash('Your player must have some code!')
+        name = request.form.get('name')
+        code = request.form.get('code')
+        game = request.form.get('game')
+        print(code)
+        input_error = check_player_input(name, code, game)
+        if input_error:
+            flash(input_error)
             return redirect(url_for('upload.upload_player'))
-        code = request.form['player_code']
-        if request.form['name'] == '':
-            flash('Your player must have a name!')
+
+        save_error = save_player(code, name, game)
+        if save_error:
+            flash(save_error)
             return redirect(url_for('upload.upload_player'))
-        name = request.form['name']
-        if 'game' not in request.form:
-            flash('Please choose a game')
-            return redirect(url_for('upload.upload_player'))
-        game = request.form['game']
-        error = save_player(code, name, game)
-        if error:
-            flash(error)
-            return redirect(url_for('upload_player'))
         else:
             flash('Player successfully saved!')
             return redirect(url_for('compete.index'))

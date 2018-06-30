@@ -11,14 +11,14 @@
 		<input name="name" id="name" required>
 		<br>
 		<br>
-		<input type=file id='player_file'>
+		<input type=file id='file'>
 		<select id=game name=game>
 			{% for game in games %}
 				<option value="{{ game['game_id'] }}">{{ game['name'] }}</option>
 			{% endfor %}
-		<label for="player_code">Code</label>
-		<textarea name="player_code" id="player_code">{{ request.form['player_code'] }}</textarea>
-		<div id="player_ace"></div>
+		<label for="code">Code</label>
+		<textarea name="code" id="code">{{ request.form['code'] }}</textarea>
+		<div id="ace_div"></div>
 		<br>
 		<input type=submit value=Save>
     </form>
@@ -30,7 +30,7 @@
       var textarea = document.querySelector("form textarea[name='" + name + "']");
 
       // create ace editor
-      var editor = ace.edit("player_ace")
+      var editor = ace.edit("ace_div")
       editor.container.style.height = "200px"
       editor.container.style.width = "100%"
       editor.session.setValue(textarea.value)
@@ -45,7 +45,7 @@
         textarea.value = editor.getValue()
       }, true)
     }
-    createEditor("player_code")
+    createEditor("code")
 	
 	function handleFileSelect(evt) {
     var files = evt.target.files
@@ -57,7 +57,7 @@
 
     reader.onload = (function(theFile) {
         return function(e) {
-			var editor = ace.edit("player_ace")
+			var editor = ace.edit("ace_div")
 			var session = editor.getSession()
           session.setValue( e.target.result )
         }
@@ -65,6 +65,6 @@
 
       reader.readAsText(f)
   }
-	document.getElementById('player_file').addEventListener('change', handleFileSelect, false)
+	document.getElementById('file').addEventListener('change', handleFileSelect, false)
   </script>
 {% endblock %}
