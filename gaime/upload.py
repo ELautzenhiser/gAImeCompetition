@@ -2,7 +2,7 @@ import os, errno
 from flask import Flask, flash, g, request, redirect, url_for, render_template, Blueprint
 from werkzeug.utils import secure_filename
 from datetime import datetime
-from .db import insert_db, query_db, rollback_db, commit_db
+from .db import insert_db, query_db, rollback_db, commit_db, get_all_rows
 from .security.input_checks import check_name
 
 PLAYER_FOLDER = 'UserSubmissions/Players/User_{0}'
@@ -48,7 +48,7 @@ def save_player(code, name, game):
     timestamp = datetime.now()    
     filename, error = save_player_file(name, code, user, timestamp)
     if error:
-        return 'Error saving file: '+str(error)
+        return ['Error saving file: '+str(error)]
     success = save_player_db(filename, user, timestamp, game)
     if not success:
         return 'Error saving to database.'
@@ -105,39 +105,51 @@ def save_game(author_id, title, description, referee_code,
 
     return None
 def check_player_input(name, code, game):
-    error = ''
+    errors = []
     if name == '':
-        error += 'Your player must have a name!\n'
+        errors.append('Your player must have a name!')
     else:
-        error += check_name(name)
+        errors.append(check_name(name))
     if code == '':
-        error += 'Your player must have some code!\n'
+        errors.append('Your player must have some code!')
     if game == '':
-        error += 'Please choose a game.\n'
-    return error
+        errors.append('Please choose a game.')
+    return errors
     
 @bp.route('/player', methods=['GET', 'POST'])
 def upload_player():
     if request.method == 'POST':
-        name = request.form.get('name')
-        code = request.form.get('code')
-        game = request.form.get('game')
-        print(code)
-        input_error = check_player_input(name, code, game)
-        if input_error:
-            flash(input_error)
-            return redirect(url_for('upload.upload_player'))
-
-        save_error = save_player(code, name, game)
-        if save_error:
-            flash(save_error)
-            return redirect(url_for('upload.upload_player'))
+        player_name = request.form.get('player_name')
+        player_code = request.form.get('player_code')
+        player_game = request.form.get('player_game')
+        
+        errors = check_player_input(player_name, player_code, player_game)
+        if not errors:
+            errors = save_player(code, name, game)
+        if errors:
+            games = get_all_rows('games')
+            flash('ERRORS:')
+            for error in errors:
+                flash(error)
+            try:
+                player_game = int(player_game)
+            except:
+                player_game = 0
+            return render_template('upload/player.html',
+                                   games=games,
+                                   player_name=player_name,
+                                   player_code=player_code,
+                                   player_game=player_game)
         else:
             flash('Player successfully saved!')
             return redirect(url_for('compete.index'))
-    query = 'SELECT game_id, name FROM Games'
-    games = query_db(query)
-    return render_template('upload/player.html', games=games)
+        
+    games = get_all_rows('Games')
+    return render_template('upload/player.html',
+                           games=games,
+                           player_name='',
+                           player_code='',
+                           player_game='')
 
 @bp.route('/game', methods=['GET', 'POST'])
 def upload_game():

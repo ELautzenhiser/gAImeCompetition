@@ -117,6 +117,10 @@ def get_db_row(table, id):
      query = 'SELECT * FROM {0} WHERE {1}={2}'.format(table, id_type, id)
      return query_db(query, 1)
      
+def get_all_rows(table):
+     query = 'SELECT * FROM {0}'.format(table)
+     return query_db(query, -1)
+
 
 @click.command('init-db')
 @with_appcontext

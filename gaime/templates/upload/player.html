@@ -7,17 +7,17 @@
 {% block content %}
 	<p>At this time, we support Python 3.</p>
 	<form method=post enctype=multipart/form-data>
-		<label for="name">Name</label>
-		<input name="name" id="name" required>
+		<label for="player_name">Name</label>
+		<input name="player_name" id="player_name" value="{{ player_name }}" required>
 		<br>
 		<br>
-		<input type=file id='file'>
-		<select id=game name=game>
+		<input type=file id='player_file'>
+		<select id=player_game name=player_game>
 			{% for game in games %}
-				<option value="{{ game['game_id'] }}">{{ game['name'] }}</option>
+				<option value="{{ game['game_id'] }}" {% if player_game==game['game_id'] %}selected{% endif %}>{{ game['name'] }}</option>
 			{% endfor %}
-		<label for="code">Code</label>
-		<textarea name="code" id="code">{{ request.form['code'] }}</textarea>
+		<label for="player_code">Code</label>
+		<textarea name="player_code" id="code">{{ player_code }}</textarea>
 		<div id="ace_div"></div>
 		<br>
 		<input type=submit value=Save>
@@ -45,13 +45,13 @@
         textarea.value = editor.getValue()
       }, true)
     }
-    createEditor("code")
+    createEditor("player_code")
 	
 	function handleFileSelect(evt) {
     var files = evt.target.files
     f = files[0]
-	if (document.getElementById('name').value == '') {
-		document.getElementById('name').value=f.name.substring(0, f.name.lastIndexOf('.'))
+	if (document.getElementById('player_name').value == '') {
+		document.getElementById('player_name').value=f.name.substring(0, f.name.lastIndexOf('.'))
 	}
     var reader = new FileReader()
 
@@ -65,6 +65,6 @@
 
       reader.readAsText(f)
   }
-	document.getElementById('file').addEventListener('change', handleFileSelect, false)
+	document.getElementById('player_file').addEventListener('change', handleFileSelect, false)
   </script>
 {% endblock %}
