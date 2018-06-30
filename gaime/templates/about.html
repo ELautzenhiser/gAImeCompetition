@@ -1,18 +1,25 @@
 {% extends 'base.html' %}
 
 {% block header %}
-     <h1>{% block title %}About Us{% endblock %}</h1>
+     <h1>{% block title %}About{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-     <h3>About the Project</h3>
-     <p>This is a project aimed towards hosting competitions between
-     AI (or if-statement based) programs in games like poker or chess.
-     Build and submit your program to see how it does against others.</p>
-     <p>See more at our <a href='https://github.com/ELautzenhiser/gAImeCompetition' target='_blank'>Github repository.</a></p>
-     <h3>About the People</h3>
-     <p>We're Ben Dittmer, Ben Jones, and Edward Lautzenhiser. If you have questions, suggestions, or want to take us out for pizza,
-	 <a href='mailto:bendittmer@gmail.com;benjaminpaikjones@gmail.com;ealautzenhiser@gmail.com'>email us</a> and let us know!</p>
+	<h3>The Project</h3>
+    <p>This is a project aimed towards hosting competitions between
+    AI (or if-statement based) programs in games like poker or chess.
+    Build and submit your program to see how it does against others.</p>
+    <p>See more at our <a href='https://github.com/ELautzenhiser/gAImeCompetition' target='_blank'>Github repository.</a></p>
+	<h3>How to Play</h3>
+	<p>Take a look at the <a href="{{ url_for('compete.index') }}">available games</a> and choose one to play. Then, write a player to compete.
+	Right now, we support players coded in Python 3, with more languages being worked on. An unpublished player can compete, but does
+	not win or lose any points - it's an opportunity to make sure there aren't any bugs and make small tweaks. Once a player is published,
+	it will earn points for wins and penalized points for losses. A published player can be challenged for competition at any time by another 
+	player. If you want to replace your player with a new and improved version, simply retire the old one. You'll keep any points accrued,
+	but it won't be able to battle anymore.</p>
+    <h3>The People</h3>
+    <p>We're Ben Dittmer, Ben Jones, and Edward Lautzenhiser. If you have questions, suggestions, or want to take us out for pizza,
+	<a href='mailto:bendittmer@gmail.com;benjaminpaikjones@gmail.com;ealautzenhiser@gmail.com'>email us</a> and let us know!</p>
 <footer>
 	<hr>
 	<a href='https://github.com/ELautzenhiser/gAImeCompetition' target='_blank'><img src="{{ url_for('static', filename='GitHub-Mark.png') }}"></a>
