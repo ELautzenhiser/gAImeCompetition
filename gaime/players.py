@@ -11,6 +11,17 @@ bp = Blueprint('players', __name__)
 @bp.route('/players', methods=['GET', 'POST'])
 def view_players():
      user_id = g.user['id']
+     player_filter = request.form.get('Filter')
+     players = get_players(user_id, player_filter)
+     return render_template('players.html', player_dict=players,player_filter=player_filter)
+
+def get_players(user_id, player_filter):
+     filter_dict = {'published' : 'AND up.status="Published" ',
+                    'unpublished' : 'AND up.status="Unpublished" ',
+                    'retired' : 'AND up.status="Retired" ',
+                    'all' : '',
+                    None : ''}
+     
      players_query = 'SELECT up.upload_id, ' \
                      'SUBSTRING(up.filename, 16) as filename, ' \
                      'up.created_dt, g.name as game, l.name as language, ' \
@@ -20,14 +31,14 @@ def view_players():
                      'INNER JOIN Games g ON up.game_id = g.game_id ' \
                      'LEFT JOIN Match_players m ON up.upload_id=m.player_id ' \
                      'WHERE up.author_id={0} AND ' \
-                     'up.type="Player" GROUP BY up.upload_id ' \
+                     'up.type="Player" {1}GROUP BY up.upload_id ' \
                      'ORDER BY CASE up.status WHEN "Unpublished" THEN 1 ' \
-                     'WHEN "Published" THEN 2 ELSE 3 END, up.created_dt DESC'.format(user_id)
+                     'WHEN "Published" THEN 2 ELSE 3 END, ' \
+                     'up.created_dt DESC'.format(user_id, filter_dict[player_filter])
      
      players = query_db(players_query, -1)
-     return render_template('players.html', player_dict=players)
-
-
+     return players
+     
 def archive_player_file(upload_id):
      player = get_db_row('uploads',upload_id)
      
