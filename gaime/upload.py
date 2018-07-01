@@ -48,7 +48,7 @@ def save_player(code, name, game):
     timestamp = datetime.now()    
     filename, error = save_player_file(name, code, user, timestamp)
     if error:
-        return ['Error saving file: '+str(error)]
+        return 'Error saving file: '+str(error)
     success = save_player_db(filename, user, timestamp, game)
     if not success:
         return 'Error saving to database.'
@@ -109,7 +109,7 @@ def check_player_input(name, code, game):
     if name == '':
         errors.append('Your player must have a name!')
     else:
-        errors.append(check_name(name))
+        errors += check_name(name)
     if code == '':
         errors.append('Your player must have some code!')
     if game == '':
@@ -125,9 +125,8 @@ def upload_player():
         
         errors = check_player_input(player_name, player_code, player_game)
         if not errors:
-            errors = save_player(code, name, game)
+            errors.append(save_player(code, name, game))
         if errors:
-            games = get_all_rows('games')
             flash('ERRORS:')
             for error in errors:
                 flash(error)
@@ -135,6 +134,7 @@ def upload_player():
                 player_game = int(player_game)
             except:
                 player_game = 0
+            games = get_all_rows('games')
             return render_template('upload/player.html',
                                    games=games,
                                    player_name=player_name,
@@ -151,24 +151,41 @@ def upload_player():
                            player_code='',
                            player_game='')
 
+def check_game_input(title, description, referee_code):
+    errors = []
+    if title == '':
+        errors.append('A game must have a name!')
+    else:
+        errors += check_name(title)
+    if description == '':
+        errors.append('A game must have a description!')
+    if referee_code == '':
+        errors.append('A game must have a referee attached.')
+
+    return errors
+
 @bp.route('/game', methods=['GET', 'POST'])
 def upload_game():
     if request.method == 'POST':
         title = request.form['title']
         description = request.form['description']
         referee_code = request.form['referee_code']
-        error = None
 
-        if not title:
-            error = 'Title is required.'
-
-        if error is not None:
-            flash(error)
-        else:
-            error = save_game(g.user['id'], title, description, referee_code, 1)
-            if error:
+        errors = check_game_input(title, description, referee_code)
+        if not errors:
+            errors.append(save_game(g.user['id'], title, description, referee_code, 1))
+        if errors:
+            flash('ERROR:')
+            for error in errors:
                 flash(error)
-            else:
-                flash('Game submitted!')
-                return redirect(url_for('compete.index'))
-    return render_template('upload/game.html')
+            return render_template('upload/game.html',
+                                    title=title,
+                                    description=description,
+                                    referee_code=referee_code)
+        else:
+            flash('Game submitted!')
+            return redirect(url_for('compete.index'))
+    return render_template('upload/game.html',
+                           title='',
+                           description='',
+                           referee_code='')
