@@ -5,7 +5,13 @@
 {% endblock %}
 
 {% block content %}
-<p>Don't see the game you want to play? <a href="{{ url_for('upload.upload_game') }}">Upload it!</a>
+{% if (g.user['privileges'] >= 2) or (g.user['privileges'] == -1) %}
+	<p>Don't see the game you want to play? <a href="{{ url_for('upload.upload_game') }}">Upload it!</a>
+{% else %}
+	<p>Don't see the game you want to play? 
+	<a href='mailto:bendittmer@gmail.com;benjaminpaikjones@gmail.com;ealautzenhiser@gmail.com'>Email us</a> 
+	and let us know!</p>
+{% endif %}
   <h2>Available Games</h2>
   {% for game in games %}
   <a class="game-link" href="{{ url_for('compete.game_info', game_id=game['game_id']) }}">

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Your Games{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+	<a class="button" href="{{ url_for('upload.upload_game') }}">Upload a New Game</a>
+	<h2>Games</h2>
+	{% for game in games %}
+		<a class="game-link" href="{{ url_for('compete.game_info', game_id=game['game_id']) }}">
+		<article class="game">
+		  <header>
+			<div class='game-listing'>
+			  <h1>{{ game['name'] }}</h1>
+			  <ul>
+				<li>Created: {{ game['created_dt'].strftime('%Y-%m-%d %H:%M:%S') }}</li>
+				<li>Status: {{ game['status'] }}</li>
+			  </ul>
+			</div>
+		  </header>
+		</article>
+    {% if not loop.last %}
+      <hr>
+    {% endif %}
+	</a>
+	{% endfor %}
+{% endblock %}

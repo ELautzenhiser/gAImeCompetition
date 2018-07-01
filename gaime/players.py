@@ -13,7 +13,9 @@ def view_players():
      user_id = g.user['id']
      player_filter = request.form.get('Filter')
      players = get_players(user_id, player_filter)
-     return render_template('players.html', player_dict=players,player_filter=player_filter)
+     return render_template('players.html',
+                            player_dict=players,
+                            player_filter=player_filter)
 
 def get_players(user_id, player_filter):
      filter_dict = {'published' : 'AND up.status="Published" ',
@@ -64,7 +66,8 @@ def get_player_name(filename):
 def get_player_file(user_id, filename):
      folder = PLAYER_FOLDER.format(user_id)
      return os.path.join(folder, filename)
-
+
+
 def change_player_status(upload_id,status):
      statement = 'Update Uploads SET status="{0}" WHERE ' \
                  'upload_id={1}'.format(status,upload_id)

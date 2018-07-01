@@ -25,7 +25,8 @@ def create_app(test_config=None):
 
     @app.before_request
     def set_default_user():
-        g.user = {'id': 1}  # default user. delete line once we have auth.
+        g.user = {'id': 1, # default user. delete line once we have auth.
+                  'privileges': -1} 
 
     from . import db
     db.init_app(app)
@@ -42,5 +43,8 @@ def create_app(test_config=None):
 
     from . import players
     app.register_blueprint(players.bp)
+
+    from . import games
+    app.register_blueprint(games.bp)
 
     return app
