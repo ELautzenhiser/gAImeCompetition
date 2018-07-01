@@ -16,6 +16,8 @@
 			{% for game in games %}
 				<option value="{{ game['game_id'] }}" {% if player_game==game['game_id'] %}selected{% endif %}>{{ game['name'] }}</option>
 			{% endfor %}
+		</select>
+		<br><br>
 		<label for="player_code">Code</label>
 		<textarea name="player_code" id="code">{{ player_code }}</textarea>
 		<div id="ace_div"></div>

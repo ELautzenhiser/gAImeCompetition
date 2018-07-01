@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}New Post{% endblock %}</h1>
+  <h1>{% block title %}New Game{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
@@ -26,7 +26,22 @@
     <label for="description">Description</label>
     <textarea name="description" id="description">{{ description }}</textarea>
     <br>
+	<select id="min_players" name="min_players">
+	{% for i in range(2,9) %}
+		<option value="{{ i }}" {% if min_players==i %}selected{% endif %}>{{ i }}</option>
+	{% endfor %}
+	</select>
+	<label for="min_players">Minimum number of players</label>
+	<br>
+	<select id="max_players" name="max_players">
+	{% for i in range(2,9) %}
+		<option value="{{ i }}" {% if max_players==i %}selected{% endif %}>{{ i }}</option>
+	{% endfor %}
+	</select>
+	<label for="max_players">Maximum number of players</label>
+	<br><br>
 	<input type=file id="referee_file">
+	<br><br>
     <label for="referee_code">Code</label>
     <textarea name="referee_code" id="referee_code">{{ referee_code }}</textarea>
 	<div id="referee_ace"></div>

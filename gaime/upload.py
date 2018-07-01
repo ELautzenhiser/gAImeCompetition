@@ -3,7 +3,7 @@ from flask import Flask, flash, g, request, redirect, url_for, render_template, 
 from werkzeug.utils import secure_filename
 from datetime import datetime
 from .db import insert_db, query_db, rollback_db, commit_db, get_all_rows
-from .security.input_checks import check_name
+from .input_checks import check_game_input, check_player_input
 
 PLAYER_FOLDER = 'UserSubmissions/Players/User_{0}'
 GAME_FOLDER = 'UserSubmissions/Games/Game_{0}'
@@ -54,7 +54,7 @@ def save_player(code, name, game):
         return 'Error saving to database.'
 
 def save_game(author_id, title, description, referee_code,
-              language_id):
+              language_id, min_players, max_players):
 
     desc_filename = "doc.md"
     ref_filename = "ref.py" 
@@ -62,8 +62,8 @@ def save_game(author_id, title, description, referee_code,
     success = insert_db(table='Games', commit=False,
                         name=title,
                         doc_file=desc_filename,
-                        min_num_players=1,
-                        max_num_players=1,
+                        min_num_players=min_players,
+                        max_num_players=max_players,
                         author_id=author_id,
                         status='Published')
     if not success:
@@ -104,17 +104,7 @@ def save_game(author_id, title, description, referee_code,
     commit_db()
 
     return None
-def check_player_input(name, code, game):
-    errors = []
-    if name == '':
-        errors.append('Your player must have a name!')
-    else:
-        errors += check_name(name)
-    if code == '':
-        errors.append('Your player must have some code!')
-    if game == '':
-        errors.append('Please choose a game.')
-    return errors
+
     
 @bp.route('/player', methods=['GET', 'POST'])
 def upload_player():
@@ -125,11 +115,11 @@ def upload_player():
         
         errors = check_player_input(player_name, player_code, player_game)
         if not errors:
-            errors.append(save_player(code, name, game))
+            errors = save_player(player_code, player_name, player_game)
         if errors:
             flash('ERRORS:')
             for error in errors:
-                flash(error)
+                flash(str(error))
             try:
                 player_game = int(player_game)
             except:
@@ -151,37 +141,36 @@ def upload_player():
                            player_code='',
                            player_game='')
 
-def check_game_input(title, description, referee_code):
-    errors = []
-    if title == '':
-        errors.append('A game must have a name!')
-    else:
-        errors += check_name(title)
-    if description == '':
-        errors.append('A game must have a description!')
-    if referee_code == '':
-        errors.append('A game must have a referee attached.')
-
-    return errors
 
 @bp.route('/game', methods=['GET', 'POST'])
 def upload_game():
     if request.method == 'POST':
-        title = request.form['title']
-        description = request.form['description']
-        referee_code = request.form['referee_code']
+        title = request.form.get('title')
+        description = request.form.get('description')
+        referee_code = request.form.get('referee_code')
+        min_players = request.form.get('min_players')
+        max_players = request.form.get('max_players')
+        try:
+            min_players = int(min_players)
+            max_players = int(max_players)
+        except:
+            min_players = None
+            max_players = None
 
-        errors = check_game_input(title, description, referee_code)
+        errors = check_game_input(title, description, referee_code, min_players, max_players)
         if not errors:
-            errors.append(save_game(g.user['id'], title, description, referee_code, 1))
+            errors = save_game(g.user['id'], title, description, referee_code, 1,
+                                    min_players, max_players)
         if errors:
             flash('ERROR:')
             for error in errors:
-                flash(error)
+                flash(str(error))
             return render_template('upload/game.html',
-                                    title=title,
-                                    description=description,
-                                    referee_code=referee_code)
+                                   title=title,
+                                   description=description,
+                                   referee_code=referee_code,
+                                   min_players=min_players,
+                                   max_players=max_players)
         else:
             flash('Game submitted!')
             return redirect(url_for('compete.index'))
