@@ -17,6 +17,7 @@ def index():
                  'LEFT JOIN (SELECT count(upload_id) as count, ' \
                  'game_id from Uploads where status="Published" and ' \
                  'type="Player" GROUP BY game_id) up on g.game_id=up.game_id ' \
+                 'WHERE g.status="Published" ' \
                  'GROUP BY g.game_id ORDER BY g.game_id DESC '
     games = query_db(game_query, -1)
     return render_template('compete/index.html', games=games)
