@@ -1,5 +1,5 @@
 def log(m):
-    print('SEND LOG 1')
+    print('SEND 1')
     print(m)
 
 N = int(input())
