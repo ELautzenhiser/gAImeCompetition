@@ -26,7 +26,8 @@ def create_app(test_config=None):
     @app.before_request
     def set_default_user():
         g.user = {'id': 1, # default user. delete line once we have auth.
-                  'privileges': -1} 
+                  'privileges': -1,
+                  'username': 'gaime_admin'} 
 
     from . import db
     db.init_app(app)

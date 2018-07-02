@@ -1,11 +1,13 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Your Games{% endblock %}</h1>
+  <h1>{% block title %}{{ username }}'s Games{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
+	{% if g.user.get('username')==username %}
 	<a class="button" href="{{ url_for('upload.upload_game') }}">Upload a New Game</a>
+	{% endif %}
 	<h2>Games</h2>
 	{% for game in games %}
 		<a class="game-link" href="{{ url_for('compete.game_info', game_id=game['game_id']) }}">
@@ -16,12 +18,12 @@
 			  <ul>
 				<li>Created: {{ game['created_dt'].strftime('%Y-%m-%d %H:%M:%S') }}</li>
 				<li>Status: {{ game['status'] }}</li>
-				{% if game['status']=='Unpublished' %}
+				{% if game['author_id']==g.user.get('id') and game['status']=='Unpublished' %}
 					<li><form action="{{ url_for('games.publish_game', game_id=game['game_id']) }}" method='post'>
 						<input type='submit' value='Publish'>
 					</form></li>
 				{% endif %}
-				{% if game['status']!='Retired' %}
+				{% if game['author_id']==g.user.get('id') and game['status']!='Retired' %}
 					<li><form action="{{ url_for('games.retire_game', game_id=game['game_id']) }}" method='post'>
 						<input type='submit' value='Retire' onclick="return confirm('Are you sure you want to retire {{ game['name'] }}?');">
 				{% endif %}

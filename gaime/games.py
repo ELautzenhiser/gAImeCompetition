@@ -4,16 +4,16 @@ from .db import query_db, get_db_row, update_db
 
 bp = Blueprint('games', __name__)
 
-@bp.route('/games', methods=['GET'])
-def view_games():
-    user_id = g.user['id']
-    games = get_games(user_id)
-    return render_template('games.html', games=games)
+@bp.route('/user/<username>/games', methods=['GET'])
+def view_games(username):
+    games = get_games(username)
+    return render_template('games.html', games=games, username=username)
 
-def get_games(user_id):
-    games_query = 'SELECT * FROM Games ' \
-                  'WHERE author_id={0} ' \
-                  'ORDER BY created_dt DESC'.format(user_id)
+def get_games(username):
+    games_query = 'SELECT * FROM Games g ' \
+                  'INNER JOIN Users u on g.author_id=u.user_id ' \
+                  'WHERE u.username="{0}" ' \
+                  'ORDER BY g.created_dt DESC'.format(username)
 
     return query_db(games_query)
 

@@ -3,10 +3,10 @@
 <title>{% block title %}{% endblock %} | gAImes</title>
 <nav>
 <a class="home-button" href="{{ url_for('compete.index') }}">gAIme Competition</a>
-	{% if (g.user['privileges'] >= 2) or (g.user['privileges'] == -1) %}
-		<a class="button" href="{{ url_for('games.view_games') }}">Your Games</a>
+	{% if (g.user.get('privileges') >= 2) or (g.user.get('privileges') == -1) %}
+		<a class="button" href="{{ url_for('games.view_games', username=g.user.get('username')) }}">Your Games</a>
 	{% endif %}
-	<a class="button" href="{{ url_for('players.view_players') }}">Your Players</a>
+	<a class="button" href="{{ url_for('players.view_players', username=g.user.get('username')) }}">Your Players</a>
 	<a class="button" href="{{ url_for('about') }}">About</a>
 </nav>
 <section class='content'>
