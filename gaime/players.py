@@ -97,7 +97,7 @@ def edit_player(upload_id):
                     file.writelines(code_lines)
           except Exception as e:
                flash(str(e))
-          return redirect(url_for('players.view_players'))
+          return redirect(url_for('players.view_players',username=g.user.get('username')))
 
 @bp.route('/player/<int:upload_id>/retire', methods=('POST',))
 def retire_player(upload_id):
@@ -109,7 +109,7 @@ def retire_player(upload_id):
      else:
           flash('Could not retire player')
 
-     return redirect(url_for('players.view_players'))
+     return redirect(url_for('players.view_players',username=g.user.get('username')))
 
 
 @bp.route('/<int:upload_id>/publish', methods=('POST',))
@@ -117,7 +117,7 @@ def publish_player(upload_id):
      success = change_player_status(upload_id,'Published')
      if not success:
           flash('Could not publish player')
-     return redirect(url_for('players.view_players'))
+     return redirect(url_for('players.view_players',username=g.user.get('username')))
 
 
 

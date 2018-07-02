@@ -11,7 +11,7 @@
 		<div id="player_ace"></div>
 		<br>
 		<input type=submit value=Save action="{{ url_for('players.edit_player', upload_id=player['upload_id'])}}">
-		<input type=submit value=Cancel action="{{ url_for('players.view_players') }}">
+		<input type=submit value=Cancel action="{{ url_for('players.view_players', username=g.user.get('username')) }}">
     </form>
 
   <script src="/static/js/lib/ace/ace.js" type="text/javascript" charset="utf-8"></script>

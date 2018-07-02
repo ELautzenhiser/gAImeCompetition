@@ -27,11 +27,11 @@ def retire_game(game_id):
     success = change_game_status(game_id,'Retired')
     if not success:
         flash('Could not retire game')
-    return redirect(url_for('games.view_games'))
+    return redirect(url_for('games.view_games',username=g.user.get('username')))
      
 @bp.route('/game/<int:game_id>/publish', methods=('POST',))
 def publish_game(game_id):
     success = change_game_status(game_id,'Published')
     if not success:
         flash('Could not publish player')
-    return redirect(url_for('games.view_games'))
+    return redirect(url_for('games.view_games',username=g.user.get('username')))
