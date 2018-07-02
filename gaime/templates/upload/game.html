@@ -8,17 +8,16 @@
 
   <style>
     textarea {
-        height: 100px;
-        width: 90%;
+      height: 100px;
+      width: 90%;
     }
 
     input {
-        display: block;
+      display: block;
     }
-
-
   </style>
-	<br>
+
+  <br>
   <form method="post">
     <label for="title">Title</label>
     <input name="title" id="title" value="{{ title }}" required>
@@ -26,25 +25,25 @@
     <label for="description">Description</label>
     <textarea name="description" id="description">{{ description }}</textarea>
     <br>
-	<select id="min_players" name="min_players">
-	{% for i in range(2,9) %}
-		<option value="{{ i }}" {% if min_players==i %}selected{% endif %}>{{ i }}</option>
-	{% endfor %}
-	</select>
-	<label for="min_players">Minimum number of players</label>
-	<br>
-	<select id="max_players" name="max_players">
-	{% for i in range(2,9) %}
-		<option value="{{ i }}" {% if max_players==i %}selected{% endif %}>{{ i }}</option>
-	{% endfor %}
-	</select>
-	<label for="max_players">Maximum number of players</label>
-	<br><br>
-	<input type=file id="referee_file">
-	<br><br>
+    <select id="min_players" name="min_players">
+    {% for i in range(2,9) %}
+      <option value="{{ i }}" {% if min_players==i %}selected{% endif %}>{{ i }}</option>
+    {% endfor %}
+    </select>
+    <label for="min_players">Minimum number of players</label>
+    <br>
+    <select id="max_players" name="max_players">
+    {% for i in range(2,9) %}
+      <option value="{{ i }}" {% if max_players==i %}selected{% endif %}>{{ i }}</option>
+    {% endfor %}
+    </select>
+    <label for="max_players">Maximum number of players</label>
+    <br><br>
+    <input type=file id="referee_file">
+    <br><br>
     <label for="referee_code">Code</label>
     <textarea name="referee_code" id="referee_code">{{ referee_code }}</textarea>
-	<div id="referee_ace"></div>
+    <div id="referee_ace"></div>
     <input type="submit" value="Save">
   </form>
 
@@ -71,24 +70,24 @@
       }, true)
     }
     createEditor("referee_code")
-	
-	function handleFileSelect(evt) {
-    var files = evt.target.files
-    f = files[0]
 
-    var reader = new FileReader()
+    function handleFileSelect(evt) {
+      var files = evt.target.files
+      f = files[0]
 
-    reader.onload = (function(theFile) {
+      var reader = new FileReader()
+
+      reader.onload = (function(theFile) {
         return function(e) {
-			var editor = ace.edit("referee_ace")
-			var session = editor.getSession()
+          var editor = ace.edit("referee_ace")
+          var session = editor.getSession()
           session.setValue( e.target.result )
         }
       })(f)
 
       reader.readAsText(f)
-  }
-	document.getElementById('referee_file').addEventListener('change', handleFileSelect, false)
+    }
+    document.getElementById('referee_file').addEventListener('change', handleFileSelect, false)
   </script>
 {% endblock %}
 
