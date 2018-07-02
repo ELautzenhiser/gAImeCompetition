@@ -73,7 +73,7 @@ def change_player_status(upload_id,status):
                  'upload_id={1}'.format(status,upload_id)
      return update_db(statement)
 
-@bp.route('/<int:upload_id>/edit', methods=('POST','GET'))
+@bp.route('/player/<int:upload_id>/edit', methods=('POST','GET'))
 def edit_player(upload_id):
      player = get_db_row('Uploads', upload_id)
      filename = get_player_file(player['author_id'], player['filename'])
@@ -98,16 +98,16 @@ def edit_player(upload_id):
                flash(str(e))
           return redirect(url_for('players.view_players'))
 
-@bp.route('/<int:upload_id>/retire', methods=('POST',))
+@bp.route('/player/<int:upload_id>/retire', methods=('POST',))
 def retire_player(upload_id):
      success = change_player_status(upload_id,'Retired')
-     if not success:
+     if success:
+          error = archive_player_file(upload_id)
+          if error:
+               flash('Error: '+str(error))
+     else:
           flash('Could not retire player')
-          return redirect(url_for('players.view_players'))
-     error = archive_player_file(upload_id)
-     if error:
-          flash('Error: '+str(error))
-          return redirect(url_for('players.view_players'))
+
      return redirect(url_for('players.view_players'))
 
 

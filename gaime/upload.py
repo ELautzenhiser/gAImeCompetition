@@ -65,7 +65,7 @@ def save_game(author_id, title, description, referee_code,
                         min_num_players=min_players,
                         max_num_players=max_players,
                         author_id=author_id,
-                        status='Published')
+                        status='Unpublished')
     if not success:
         rollback_db()
         return "Transaction Error: unable to insert Game"

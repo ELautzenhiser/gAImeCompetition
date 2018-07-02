@@ -16,6 +16,15 @@
 			  <ul>
 				<li>Created: {{ game['created_dt'].strftime('%Y-%m-%d %H:%M:%S') }}</li>
 				<li>Status: {{ game['status'] }}</li>
+				{% if game['status']=='Unpublished' %}
+					<li><form action="{{ url_for('games.publish_game', game_id=game['game_id']) }}" method='post'>
+						<input type='submit' value='Publish'>
+					</form></li>
+				{% endif %}
+				{% if game['status']!='Retired' %}
+					<li><form action="{{ url_for('games.retire_game', game_id=game['game_id']) }}" method='post'>
+						<input type='submit' value='Retire' onclick="return confirm('Are you sure you want to retire {{ game['name'] }}?');">
+				{% endif %}
 			  </ul>
 			</div>
 		  </header>
