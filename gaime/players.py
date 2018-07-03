@@ -90,8 +90,6 @@ def edit_player(upload_id):
 
      elif request.method == 'POST':
           if request.form.get('action') == 'Save':
-               player = get_db_row('Uploads', upload_id)
-               filename = get_player_file(player['author_id'], player['filename'])
                try:
                     with open(filename, 'w') as file:
                          file.write(request.form['code'].replace('\r\n', '\n'))
