@@ -100,11 +100,12 @@ def insert_db(table, commit=True, **kwargs):
          db.commit()
      return success
 
-def update_db(update):
+def update_db(update, commit=True):
      db = open_db()
      with db.cursor() as cursor:
           success = cursor.execute(update)
-     db.commit()
+     if commit:
+          db.commit()
      return success
 
 def get_db_row(table, id):

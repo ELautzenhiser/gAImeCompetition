@@ -76,7 +76,7 @@ def save_game(author_id, title, description, referee_code,
                         game_id=game_id,
                         author_id=author_id,
                         type='Ref',
-                        status='Published')
+                        status='Unpublished')
     if not success:
         rollback_db()
         return "Transaction Error: unable to insert Upload"
@@ -143,7 +143,7 @@ def upload_player():
 @bp.route('/game', methods=['GET', 'POST'])
 def upload_game():
     if request.method == 'POST':
-        title = request.form.get('title')
+        name = request.form.get('name')
         description = request.form.get('description')
         referee_code = request.form.get('referee_code')
         min_players = request.form.get('min_players')
@@ -155,16 +155,16 @@ def upload_game():
             min_players = None
             max_players = None
 
-        errors = check_game_input(title, description, referee_code, min_players, max_players)
+        errors = check_game_input(name, description, referee_code, min_players, max_players)
         if not errors:
-            errors = save_game(g.user['id'], title, description, referee_code, 1,
+            errors = save_game(g.user['id'], name, description, referee_code, 1,
                                     min_players, max_players)
         if errors:
             flash('ERROR:')
             for error in errors:
                 flash(str(error))
             return render_template('upload/game.html',
-                                   title=title,
+                                   name=name,
                                    description=description,
                                    referee_code=referee_code,
                                    min_players=min_players,
@@ -173,6 +173,6 @@ def upload_game():
             flash('Game submitted!')
             return redirect(url_for('compete.index'))
     return render_template('upload/game.html',
-                           title='',
+                           name='',
                            description='',
                            referee_code='')

@@ -89,13 +89,12 @@ def edit_player(upload_id):
           return render_template('edit_player.html', player=player)
 
      elif request.method == 'POST':
-          player = get_db_row('Uploads', upload_id)
-          filename = get_player_file(player['author_id'], player['filename'])
-          try:
-               with open(filename, 'w') as file:
-                    file.write(request.form['code'].replace('\r\n', '\n'))
-          except Exception as e:
-               flash(str(e))
+          if request.form.get('action') == 'Save':
+               try:
+                    with open(filename, 'w') as file:
+                         file.write(request.form['code'].replace('\r\n', '\n'))
+               except Exception as e:
+                    flash(str(e))
           return redirect(url_for('players.view_players',username=g.user.get('username')))
 
 @bp.route('/player/<int:upload_id>/retire', methods=('POST',))
