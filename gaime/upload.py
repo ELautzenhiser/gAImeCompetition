@@ -76,7 +76,7 @@ def save_game(author_id, title, description, referee_code,
                         game_id=game_id,
                         author_id=author_id,
                         type='Ref',
-                        status='Published')
+                        status='Unpublished')
     if not success:
         rollback_db()
         return "Transaction Error: unable to insert Upload"
@@ -164,7 +164,7 @@ def upload_game():
             for error in errors:
                 flash(str(error))
             return render_template('upload/game.html',
-                                   title=title,
+                                   name=name,
                                    description=description,
                                    referee_code=referee_code,
                                    min_players=min_players,
