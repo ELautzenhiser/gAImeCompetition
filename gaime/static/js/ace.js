@@ -1,22 +1,26 @@
-function createEditor(div_id, textarea_id)
-{
-    // find the textarea
-    var textarea = document.getElementById(textarea_id)
-
-    // create ace editor
-    var editor = ace.edit(div_id)
-    editor.setTheme("ace/theme/monokai");
-    editor.session.setMode("ace/mode/python")
-    editor.session.setValue(textarea.value)
-
-    // hide textarea
-    textarea.style.display = "none"
-
-    // find the parent form and add submit event listener
-    var form = textarea
-    while (form && form.localName != "form") form = form.parentNode
-    form.addEventListener("submit", function() {
-        // update value of textarea to match value in ace
-        textarea.value = editor.getValue()
-    }, true)
-}
+// Hook up ACE editor to all textareas with data-editor attribute
+// Taken from Duncan Smart's Integrating ACE Editor in a progressive way
+// https://gist.github.com/duncansmart/5267653
+$(function () {
+    $('textarea[data-editor]').each(function () {
+        var textarea = $(this);
+        var mode = textarea.data('editor');
+        var editDiv = $('<div>', {
+            position: 'absolute',
+            width: textarea.width(),
+            height: textarea.height(),
+            class: textarea.attr('class'),
+        }).insertBefore(textarea);
+        textarea.css('display', 'none');
+        var editor = ace.edit(editDiv[0]);
+        editor.renderer.setShowGutter(false);
+        editor.getSession().setValue(textarea.val());
+        editor.getSession().setMode("ace/mode/" + mode);
+        editor.setTheme("ace/theme/monokai");
+        
+        // copy back to textarea on form submit...
+        textarea.closest('form').submit(function () {
+            textarea.val(editor.getSession().getValue());
+        })
+    });
+});

@@ -42,16 +42,15 @@
     <input type=file id="referee_file">
     <br><br>
     <label for="referee_code">Code</label>
-    <textarea name="referee_code" id="referee_code">{{ referee_code }}</textarea>
+    <textarea name="referee_code" data-editor="python" class="referee_code">{{ referee_code }}</textarea>
     <div id="referee_ace"></div>
     <input type="submit" value="Save">
   </form>
 
-  <script src="/static/js/lib/ace/ace.js" type="text/javascript" charset="utf-8"></script>
-  <script src="/static/js/ace.js" type="text/javascript" charset="utf-8"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.9/ace.js"></script>
+  <script src="/static/js/ace.js"></script>
   <script>
-    createEditor("referee_ace", "referee_code")
-
     function handleFileSelect(evt) {
       var files = evt.target.files
       f = files[0]
