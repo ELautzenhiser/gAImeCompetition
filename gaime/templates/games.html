@@ -22,6 +22,9 @@
 					<li><form action="{{ url_for('games.publish_game', game_id=game['game_id']) }}" method='post'>
 						<input type='submit' value='Publish'>
 					</form></li>
+					<li><form action="{{ url_for('games.edit_game', game_id=game['game_id']) }}" method='get'>
+						<input type='submit' value='Edit'>
+					</form></li>
 				{% endif %}
 				{% if game['author_id']==g.user.get('id') and game['status']!='Retired' %}
 					<li><form action="{{ url_for('games.retire_game', game_id=game['game_id']) }}" method='post'>
