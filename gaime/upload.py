@@ -171,7 +171,7 @@ def upload_game():
                                    max_players=max_players)
         else:
             flash('Game submitted!')
-            return redirect(url_for('compete.index'))
+            return redirect(url_for('games.view_games', username=g.user['username']))
     return render_template('upload/game.html',
                            name='',
                            description='',
