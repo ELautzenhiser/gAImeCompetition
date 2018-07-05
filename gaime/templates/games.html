@@ -18,7 +18,7 @@
 			  <ul>
 				<li>Created: {{ game['created_dt'].strftime('%Y-%m-%d %H:%M:%S') }}</li>
 				<li>Status: {{ game['status'] }}</li>
-				{% if game['author_id']==g.user.get('id') and game['status']=='Unpublished' %}
+				{% if game['author']==g.user.get('username') and game['status']=='Unpublished' %}
 					<li><form action="{{ url_for('games.publish_game', game_id=game['game_id']) }}" method='post'>
 						<input type='submit' value='Publish'>
 					</form></li>
@@ -26,7 +26,7 @@
 						<input type='submit' value='Edit'>
 					</form></li>
 				{% endif %}
-				{% if game['author_id']==g.user.get('id') and game['status']!='Retired' %}
+				{% if game['author']==g.user.get('username') and game['status']!='Retired' %}
 					<li><form action="{{ url_for('games.retire_game', game_id=game['game_id']) }}" method='post'>
 						<input type='submit' value='Retire' onclick="return confirm('Are you sure you want to retire {{ game['name'] }}?');">
 				{% endif %}

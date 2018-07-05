@@ -3,8 +3,8 @@ from flask import Blueprint, flash, g, request, redirect, url_for, render_templa
 from datetime import datetime
 from .db import query_db, insert_db, update_db, get_db_row
 
-PLAYER_FOLDER = 'UserSubmissions/Players/User_{0}/'
-ARCHIVE_FOLDER = 'UserSubmissions/Archive/Players/User_{0}'
+PLAYER_FOLDER = 'UserSubmissions/Players/{0}/'
+ARCHIVE_FOLDER = 'UserSubmissions/Archive/Players/{0}/'
 
 bp = Blueprint('players', __name__)
 
@@ -24,14 +24,14 @@ def get_players(username, player_filter):
                     'all' : '',
                     None : ''}
      
-     players_query = 'SELECT up.upload_id, up.author_id, ' \
+     players_query = 'SELECT up.upload_id, up.author, ' \
                      'SUBSTRING(up.filename, 16) as filename, ' \
                      'up.created_dt, g.name as game, l.name as language, ' \
                      'COALESCE(SUM(m.points),0) as score, up.status ' \
                      'FROM Uploads up inner join Languages l ' \
                      'ON up.language_id = l.language_id ' \
                      'INNER JOIN Games g ON up.game_id = g.game_id ' \
-                     'INNER JOIN Users u ON up.author_id = u.user_id ' \
+                     'INNER JOIN Users u ON up.author = u.username ' \
                      'LEFT JOIN Match_players m ON up.upload_id=m.player_id ' \
                      'WHERE u.username="{0}" AND ' \
                      'up.type="Player" {1}GROUP BY up.upload_id ' \
@@ -45,27 +45,29 @@ def get_players(username, player_filter):
 def archive_player_file(upload_id):
      player = get_db_row('uploads',upload_id)
      
-     user_id = player['author_id']
+     username = player['author']
      filename = player['filename']
-     
-     origin_folder = PLAYER_FOLDER.format(user_id)
-     destination_folder = ARCHIVE_FOLDER.format(user_id)
      try:
-          os.makedirs(destination_folder)
-     except OSError:
-          pass
-     try:
-          os.rename(origin_folder+'/'+filename, destination_folder + '/' + filename)
-     except OSError as e:
-          return e
+          origin_folder = PLAYER_FOLDER.format(username)
+          destination_folder = ARCHIVE_FOLDER.format(username)
+          try:
+               os.makedirs(destination_folder)
+          except OSError:
+               pass
+          try:
+               os.rename(origin_folder+'/'+filename, destination_folder + '/' + filename)
+          except OSError as e:
+               return e
+     except Exception as e:
+          print(e)
 
      
 def get_player_name(filename):
      name = os.path.splitext(os.path.basename(filename))[0][15:]
      return name
 
-def get_player_file(user_id, filename):
-     folder = PLAYER_FOLDER.format(user_id)
+def get_player_file(username, filename):
+     folder = PLAYER_FOLDER.format(username)
      return os.path.join(folder, filename)
 
 

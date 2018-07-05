@@ -28,7 +28,7 @@
 				<li>Created: {{ player['created_dt'].strftime('%Y-%m-%d %H:%M:%S') }}</li>
 				<li>Status: {{ player['status'] }}</li>
 				<li>Score: {{ player['score'] }}</li>
-				{% if player['author_id']==g.user.get('id') and player['status']=='Unpublished' %}
+				{% if player['author']==g.user.get('username') and player['status']=='Unpublished' %}
 					<li><form action="{{ url_for('players.publish_player', upload_id=player['upload_id']) }}" method='post'>
 						<input type='submit' value='Publish'>
 					</form></li>
@@ -36,7 +36,7 @@
 						<input type='submit' value='Edit'>
 					</form></li>
 				{% endif %}
-				{% if player['author_id']==g.user.get('id') and player['status']!='Retired' %}
+				{% if player['author']==g.user.get('username') and player['status']!='Retired' %}
 					<li><form action="{{ url_for('players.retire_player', upload_id=player['upload_id']) }}" method='post'>
 						<input class='danger' type='submit' value='Retire' onclick="return confirm('Are you sure you want to retire {{ player['filename'] }}?');">
 					</form></li>

@@ -14,7 +14,7 @@ def view_games(username):
 
 def get_games(username):
     games_query = 'SELECT * FROM Games g ' \
-                  'INNER JOIN Users u on g.author_id=u.user_id ' \
+                  'INNER JOIN Users u on g.author=u.username ' \
                   'WHERE u.username="{0}" ' \
                   'ORDER BY g.created_dt DESC'.format(username)
 
