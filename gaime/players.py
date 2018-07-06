@@ -79,7 +79,7 @@ def change_player_status(upload_id,status):
 @bp.route('/player/<int:upload_id>/edit', methods=('POST','GET'))
 def edit_player(upload_id):
      player = get_db_row('Uploads', upload_id)
-     filename = get_player_file(player['author_id'], player['filename'])
+     filename = get_player_file(player['author'], player['filename'])
      if request.method == 'GET':
           player['name'] = get_player_name(player['filename'])
           try:
