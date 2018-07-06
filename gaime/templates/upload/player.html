@@ -5,13 +5,26 @@
 {% endblock %}
 
 {% block content %}
+
+
+  <style> 
+    textarea { 
+      height: 100px; 
+      width: 90%; 
+    } 
+ 
+    input { 
+      display: block; 
+    } 
+  </style> 
+
 	<p>At this time, we support Python 3.</p>
 	<form method=post enctype=multipart/form-data>
 		<label for="player_name">Name</label>
 		<input name="player_name" id="player_name" value="{{ player_name }}" required>
 		<br>
 		<br>
-		<input type=file id='player_file'>
+		<input type=file data-editor-class="player_code">
 		<select id=player_game name=player_game>
 			{% for game in games %}
 				<option value="{{ game['game_id'] }}" {% if player_game==game['game_id'] %}selected{% endif %}>{{ game['name'] }}</option>
@@ -19,54 +32,14 @@
 		</select>
 		<br><br>
 		<label for="player_code">Code</label>
-		<textarea name="player_code" id="code">{{ player_code }}</textarea>
+		<textarea name="player_code" data-editor="python" class="player_code">{{ player_code }}</textarea>
 		<div id="ace_div"></div>
 		<br>
 		<input type=submit value=Save>
     </form>
 
-  <script src="/static/js/lib/ace/ace.js" type="text/javascript" charset="utf-8"></script>
-  <script>
-    function createEditor(name) {
-      // find the textarea
-      var textarea = document.querySelector("form textarea[name='" + name + "']");
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.9/ace.js"></script>
+  <script src="/static/js/ace.js"></script>
 
-      // create ace editor
-      var editor = ace.edit("ace_div")
-      editor.container.style.height = "200px"
-      editor.container.style.width = "100%"
-      editor.session.setValue(textarea.value)
-      // replace textarea with ace
-      textarea.parentNode.insertBefore(editor.container, textarea)
-      textarea.style.display = "none"
-      // find the parent form and add submit event listener
-      var form = textarea
-      while (form && form.localName != "form") form = form.parentNode
-      form.addEventListener("submit", function() {
-        // update value of textarea to match value in ace
-        textarea.value = editor.getValue()
-      }, true)
-    }
-    createEditor("player_code")
-	
-	function handleFileSelect(evt) {
-    var files = evt.target.files
-    f = files[0]
-	if (document.getElementById('player_name').value == '') {
-		document.getElementById('player_name').value=f.name.substring(0, f.name.lastIndexOf('.'))
-	}
-    var reader = new FileReader()
-
-    reader.onload = (function(theFile) {
-        return function(e) {
-			var editor = ace.edit("ace_div")
-			var session = editor.getSession()
-          session.setValue( e.target.result )
-        }
-      })(f)
-
-      reader.readAsText(f)
-  }
-	document.getElementById('player_file').addEventListener('change', handleFileSelect, false)
-  </script>
 {% endblock %}
