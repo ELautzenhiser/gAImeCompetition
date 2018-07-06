@@ -24,7 +24,7 @@ def index():
 
 @bp.route('/game_info/<int:game_id>', methods=('POST','GET'))
 def game_info(game_id):
-    user_id = g.user['username']
+    username = g.user['username']
     players_query = 'SELECT up.upload_id, ' \
                     'SUBSTRING(up.filename, 16) as filename, ' \
                     'up.created_dt, l.name as language, ' \
@@ -32,13 +32,13 @@ def game_info(game_id):
                     'FROM Uploads up inner join Languages l ' \
                     'ON up.language_id = l.language_id ' \
                     'LEFT JOIN Match_players m ON up.upload_id=m.player_id ' \
-                    'WHERE up.author={0} AND up.status="Published" ' \
+                    'WHERE up.author="{0}" AND up.status="Published" ' \
                     'AND up.type=\'Player\' AND up.game_id={1} ' \
                     'GROUP BY up.upload_id ' \
                     'ORDER BY up.created_dt DESC'.format(username, game_id)
     players = query_db(players_query)
     
-    game_query = 'SELECT g.author_id, g.name, g.created_dt, g.max_num_players, g.game_id, ' \
+    game_query = 'SELECT g.author, g.name, g.created_dt, g.max_num_players, g.game_id, ' \
                  'g.min_num_players, g.doc_file, u.username from Games g INNER JOIN Users u ' \
                  'ON g.author=u.username WHERE g.game_id={0}'.format(game_id)
     game = query_db(game_query, 1)
@@ -65,7 +65,7 @@ def compete(challenger, challenged, ref, game_id):
 
 @bp.route('/game/<int:game_id>/compete/<int:player_id>', methods=('POST','GET'))
 def start_competition(player_id,game_id):
-    user_id = g.user['id']
+    username = g.user['username']
 
     game = get_db_row('games',game_id)
 
