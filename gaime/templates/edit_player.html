@@ -5,21 +5,9 @@
 {% endblock %}
 
 {% block content %}
-
-  <style> 
-    textarea { 
-      height: 100px; 
-      width: 90%; 
-    } 
- 
-    input { 
-      display: block; 
-    } 
-  </style> 
-
 	<h3>{{ player['name'] }}</h3>
 	<form method=post enctype=multipart/form-data>
-		<textarea name="code" data-editor="python" class="code">{{ player['code'] }}</textarea>
+		<textarea name="code" data-editor="python" class="player_code">{{ player['code'] }}</textarea>
 		<div id="player_ace"></div>
 		<br>
 		<input type=submit name='action' value='Save'>

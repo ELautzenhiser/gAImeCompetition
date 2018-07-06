@@ -5,25 +5,13 @@
 {% endblock %}
 
 {% block content %}
-
-  <style>
-    textarea {
-      height: 100px;
-      width: 90%;
-    }
-
-    input {
-      display: block;
-    }
-  </style>
-
   <br>
   <form method="post">
     <label for="name">Name</label>
     <input name="name" id="name" value="{{ name }}" required>
     <br>
     <label for="description">Description</label>
-    <textarea name="description" id="description">{{ description }}</textarea>
+    <textarea name="description" id="description" class="description">{{ description }}</textarea>
     <br>
     <select id="min_players" name="min_players">
     {% for i in range(2,9) %}

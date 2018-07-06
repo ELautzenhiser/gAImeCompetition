@@ -47,3 +47,21 @@ footer {
 textarea {
     display: block;
 }
+
+.referee_code {
+	height: 300px;
+	width: 70%;
+}
+
+.description {
+	height: 200px;
+	width: 70%;
+}
+
+.player_code {
+	height: 500px;
+	width: 70%;
+}
+}
+}
+}
