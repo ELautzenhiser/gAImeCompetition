@@ -5,7 +5,7 @@ from datetime import datetime
 from .db import insert_db, query_db, rollback_db, commit_db, get_all_rows
 from .input_checks import check_game_input, check_player_input
 
-PLAYER_FOLDER = 'UserSubmissions/Players/User_{0}'
+PLAYER_FOLDER = 'UserSubmissions/Players/{0}'
 GAME_FOLDER = 'UserSubmissions/Games/Game_{0}'
 ALLOWED_EXTENSIONS = set(['py', 'txt'])
 
@@ -37,13 +37,13 @@ def save_player_db(filename, user, timestamp, game):
                      filename=filename,
                      language_id=language,
                      game_id=game,
-                     author_id=user,
+                     author=user,
                      created_dt=time_str,
                      type='Player',
                      status='Unpublished')
 
 def save_player(code, name, game):
-    user = g.user['id']
+    user = g.user['username']
     timestamp = datetime.now()    
     filename, error = save_player_file(name, code, user, timestamp)
     if error:
@@ -52,7 +52,7 @@ def save_player(code, name, game):
     if not success:
         return 'Error saving to database.'
 
-def save_game(author_id, title, description, referee_code,
+def save_game(author, title, description, referee_code,
               language_id, min_players, max_players):
 
     desc_filename = "doc.md"
@@ -63,7 +63,7 @@ def save_game(author_id, title, description, referee_code,
                         doc_file=desc_filename,
                         min_num_players=min_players,
                         max_num_players=max_players,
-                        author_id=author_id,
+                        author=author,
                         status='Unpublished')
     if not success:
         rollback_db()
@@ -74,7 +74,7 @@ def save_game(author_id, title, description, referee_code,
                         filename=ref_filename,
                         language_id=language_id,
                         game_id=game_id,
-                        author_id=author_id,
+                        author=author,
                         type='Ref',
                         status='Unpublished')
     if not success:
@@ -157,7 +157,7 @@ def upload_game():
 
         errors = check_game_input(name, description, referee_code, min_players, max_players)
         if not errors:
-            errors = save_game(g.user['id'], name, description, referee_code, 1,
+            errors = save_game(g.user.get('username'), name, description, referee_code, 1,
                                     min_players, max_players)
         if errors:
             flash('ERROR:')

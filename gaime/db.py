@@ -109,7 +109,7 @@ def update_db(update, commit=True):
      return success
 
 def get_db_row(table, id):
-     table_ids = {'users':'user_id', 'languages':'language_id',
+     table_ids = {'users':'username', 'languages':'language_id',
                   'games':'game_id', 'uploads':'upload_id',
                   'matches':'match_id', 'moves':'move_id'}
      id_type = table_ids.get(table.lower())

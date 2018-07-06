@@ -13,7 +13,7 @@ def index():
     #The query will need to be updated to only show games with an active referee
     game_query = 'SELECT g.game_id, g.name, g.max_num_players, u.username, ' \
                  'g.created_dt, COALESCE(up.count,0) as num_competitors ' \
-                 'FROM Games g INNER JOIN Users u ON g.author_id = u.user_id ' \
+                 'FROM Games g INNER JOIN Users u ON g.author = u.username ' \
                  'LEFT JOIN (SELECT count(upload_id) as count, ' \
                  'game_id from Uploads where status="Published" and ' \
                  'type="Player" GROUP BY game_id) up on g.game_id=up.game_id ' \
@@ -24,7 +24,7 @@ def index():
 
 @bp.route('/game_info/<int:game_id>', methods=('POST','GET'))
 def game_info(game_id):
-    user_id = g.user['id']
+    user_id = g.user['username']
     players_query = 'SELECT up.upload_id, ' \
                     'SUBSTRING(up.filename, 16) as filename, ' \
                     'up.created_dt, l.name as language, ' \
@@ -32,15 +32,15 @@ def game_info(game_id):
                     'FROM Uploads up inner join Languages l ' \
                     'ON up.language_id = l.language_id ' \
                     'LEFT JOIN Match_players m ON up.upload_id=m.player_id ' \
-                    'WHERE up.author_id={0} AND up.status="Published" ' \
+                    'WHERE up.author={0} AND up.status="Published" ' \
                     'AND up.type=\'Player\' AND up.game_id={1} ' \
                     'GROUP BY up.upload_id ' \
-                    'ORDER BY up.created_dt DESC'.format(user_id, game_id)
+                    'ORDER BY up.created_dt DESC'.format(username, game_id)
     players = query_db(players_query)
     
     game_query = 'SELECT g.author_id, g.name, g.created_dt, g.max_num_players, g.game_id, ' \
                  'g.min_num_players, g.doc_file, u.username from Games g INNER JOIN Users u ' \
-                 'ON g.author_id=u.user_id WHERE g.game_id={0}'.format(game_id)
+                 'ON g.author=u.username WHERE g.game_id={0}'.format(game_id)
     game = query_db(game_query, 1)
     doc_filename = GAME_PATH.format(game['game_id'],game['doc_file'])
     with open(doc_filename, 'r') as doc_file:
@@ -48,7 +48,7 @@ def game_info(game_id):
 
     top_query = 'SELECT COALESCE(SUM(m.points),0) score, up.upload_id, u.username, ' \
                 'up.created_dt ' \
-                'FROM Uploads up INNER JOIN Users u on up.author_id=u.user_id ' \
+                'FROM Uploads up INNER JOIN Users u on up.author=u.username ' \
                 'LEFT JOIN Match_players m on up.upload_id=m.player_id ' \
                 'WHERE up.type="Player" AND up.status="Published" ' \
                 'AND up.game_id={0} GROUP BY up.upload_id ' \
@@ -57,7 +57,7 @@ def game_info(game_id):
     top_player = query_db(top_query, 1)
 
     return render_template('compete/game_info.html',game=game, players=players,
-                           top_player=top_player, user_id=user_id)
+                           top_player=top_player, username=username)
 
 def compete(challenger, challenged, ref, game_id):
     flash('This is a placeholder! Good fight!')
@@ -103,7 +103,7 @@ def get_ref_for_game(game_id):
     return query_db(query, 1)
 
 def get_other_players_for_game(game_id, player_id):
-    query = 'SELECT upload_id, author_id, filename FROM Uploads ' \
+    query = 'SELECT upload_id, author, filename FROM Uploads ' \
             'WHERE type="Player" AND status="Published" AND ' \
             'game_id={0} AND upload_id<>{1} ' \
             'ORDER BY RAND()'.format(game_id,player_id)
