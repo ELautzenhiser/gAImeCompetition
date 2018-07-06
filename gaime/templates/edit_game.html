@@ -39,57 +39,19 @@
     </select>
     <label for="max_players">Maximum number of players</label>
     <br><br>
-    <input type=file id="referee_file">
+    <input type=file data-editor-class="referee_code">
     <br><br>
     <label for="referee_code">Code</label>
-    <textarea name="referee_code" id="referee_code">{{ game['referee_code'] }}</textarea>
+    <textarea name="referee_code" data-editor="python" class="referee_code">{{ game['referee_code'] }}</textarea>
     <div id="referee_ace"></div>
     <input type="submit" name="action" value="Save">
-	<input type="submit" name="action" value="Cancel">
+    <input type="submit" name="action" value="Cancel">
   </form>
 
-  <script src="/static/js/lib/ace/ace.js" type="text/javascript" charset="utf-8"></script>
-  <script>
-    function createEditor(name) {
-      // find the textarea
-      var textarea = document.querySelector("form textarea[name='" + name + "']");
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.9/ace.js"></script>
+  <script src="/static/js/ace.js"></script>
 
-      // create ace editor
-      var editor = ace.edit("referee_ace")
-      editor.container.style.height = "200px"
-      editor.container.style.width = "100%"
-      editor.session.setValue(textarea.value)
-      // replace textarea with ace
-      textarea.parentNode.insertBefore(editor.container, textarea)
-      textarea.style.display = "none"
-      // find the parent form and add submit event listener
-      var form = textarea
-      while (form && form.localName != "form") form = form.parentNode
-      form.addEventListener("submit", function() {
-        // update value of textarea to match value in ace
-        textarea.value = editor.getValue()
-      }, true)
-    }
-    createEditor("referee_code")
-
-    function handleFileSelect(evt) {
-      var files = evt.target.files
-      f = files[0]
-
-      var reader = new FileReader()
-
-      reader.onload = (function(theFile) {
-        return function(e) {
-          var editor = ace.edit("referee_ace")
-          var session = editor.getSession()
-          session.setValue( e.target.result )
-        }
-      })(f)
-
-      reader.readAsText(f)
-    }
-    document.getElementById('referee_file').addEventListener('change', handleFileSelect, false)
-  </script>
 {% endblock %}
 
 
