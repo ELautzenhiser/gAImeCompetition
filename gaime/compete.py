@@ -24,19 +24,23 @@ def index():
 
 @bp.route('/game_info/<int:game_id>', methods=('POST','GET'))
 def game_info(game_id):
-    username = g.user['username']
-    players_query = 'SELECT up.upload_id, ' \
-                    'SUBSTRING(up.filename, 16) as filename, ' \
-                    'up.created_dt, l.name as language, ' \
-                    'COALESCE(SUM(m.points),0) as score ' \
-                    'FROM Uploads up inner join Languages l ' \
-                    'ON up.language_id = l.language_id ' \
-                    'LEFT JOIN Match_players m ON up.upload_id=m.player_id ' \
-                    'WHERE up.author="{0}" AND up.status="Published" ' \
-                    'AND up.type=\'Player\' AND up.game_id={1} ' \
-                    'GROUP BY up.upload_id ' \
-                    'ORDER BY up.created_dt DESC'.format(username, game_id)
-    players = query_db(players_query)
+    if g.user:
+        username = g.user.get('username')
+        players_query = 'SELECT up.upload_id, ' \
+                        'SUBSTRING(up.filename, 16) as filename, ' \
+                        'up.created_dt, l.name as language, ' \
+                        'COALESCE(SUM(m.points),0) as score ' \
+                        'FROM Uploads up inner join Languages l ' \
+                        'ON up.language_id = l.language_id ' \
+                        'LEFT JOIN Match_players m ON up.upload_id=m.player_id ' \
+                        'WHERE up.author="{0}" AND up.status="Published" ' \
+                        'AND up.type=\'Player\' AND up.game_id={1} ' \
+                        'GROUP BY up.upload_id ' \
+                        'ORDER BY up.created_dt DESC'.format(username, game_id)
+        players = query_db(players_query)
+    else:
+        username = None
+        players = None
     
     game_query = 'SELECT g.author, g.name, g.created_dt, g.max_num_players, g.game_id, ' \
                  'g.min_num_players, g.doc_file, u.username from Games g INNER JOIN Users u ' \

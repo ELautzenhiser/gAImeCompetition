@@ -5,8 +5,8 @@
 {% endblock %}
 
 {% block content %}
-	{% if g.user.get('username')==username %}
-	<a class="button" href="{{ url_for('upload.upload_player') }}">Upload a New Player</a>
+	{% if g.user and (g.user.get('username')==username) %}
+		<a class="button" href="{{ url_for('upload.upload_player') }}">Upload a New Player</a>
 	{% endif %}
 	<h2>Players</h2>
 	<form method='post'>
@@ -18,6 +18,7 @@
 		</select>
 	</form>
 	{% for player in player_dict %}
+		{% if (g.user and (player['author']==g.user.get('username'))) or player['status']=='Published' %}
 		<article class="player">
 		  <header>
 			<div>
@@ -28,7 +29,7 @@
 				<li>Created: {{ player['created_dt'].strftime('%Y-%m-%d %H:%M:%S') }}</li>
 				<li>Status: {{ player['status'] }}</li>
 				<li>Score: {{ player['score'] }}</li>
-				{% if player['author']==g.user.get('username') and player['status']=='Unpublished' %}
+				{% if g.user and (player['author']==g.user.get('username') and player['status']=='Unpublished') %}
 					<li><form action="{{ url_for('players.publish_player', upload_id=player['upload_id']) }}" method='post'>
 						<input type='submit' value='Publish'>
 					</form></li>
@@ -36,7 +37,7 @@
 						<input type='submit' value='Edit'>
 					</form></li>
 				{% endif %}
-				{% if player['author']==g.user.get('username') and player['status']!='Retired' %}
+				{% if g.user and (player['author']==g.user.get('username') and player['status']!='Retired') %}
 					<li><form action="{{ url_for('players.retire_player', upload_id=player['upload_id']) }}" method='post'>
 						<input class='danger' type='submit' value='Retire' onclick="return confirm('Are you sure you want to retire {{ player['filename'] }}?');">
 					</form></li>
@@ -45,6 +46,7 @@
 			</div>
 		  </header>
 		</article>
+		{% endif %}
     {% if not loop.last %}
       <hr>
     {% endif %}

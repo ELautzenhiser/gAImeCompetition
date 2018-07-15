@@ -5,11 +5,12 @@
 {% endblock %}
 
 {% block content %}
-	{% if g.user.get('username')==username %}
-	<a class="button" href="{{ url_for('upload.upload_game') }}">Upload a New Game</a>
+	{% if g.user and (g.user.get('username')==username) %}
+		<a class="button" href="{{ url_for('upload.upload_game') }}">Upload a New Game</a>
 	{% endif %}
 	<h2>Games</h2>
 	{% for game in games %}
+		{% if (g.user and game['author']==g.user.get('username')) or game['status']=='Published' %}
 		<a class="game-link" href="{{ url_for('compete.game_info', game_id=game['game_id']) }}">
 		<article class="game">
 		  <header>
@@ -18,7 +19,7 @@
 			  <ul>
 				<li>Created: {{ game['created_dt'].strftime('%Y-%m-%d %H:%M:%S') }}</li>
 				<li>Status: {{ game['status'] }}</li>
-				{% if game['author']==g.user.get('username') and game['status']=='Unpublished' %}
+				{% if g.user and (game['author']==g.user.get('username') and game['status']=='Unpublished') %}
 					<li><form action="{{ url_for('games.publish_game', game_id=game['game_id']) }}" method='post'>
 						<input type='submit' value='Publish'>
 					</form></li>
@@ -26,7 +27,7 @@
 						<input type='submit' value='Edit'>
 					</form></li>
 				{% endif %}
-				{% if game['author']==g.user.get('username') and game['status']!='Retired' %}
+				{% if g.user and (game['author']==g.user.get('username') and game['status']!='Retired') %}
 					<li><form action="{{ url_for('games.retire_game', game_id=game['game_id']) }}" method='post'>
 						<input type='submit' value='Retire' onclick="return confirm('Are you sure you want to retire {{ game['name'] }}?');">
 				{% endif %}
@@ -34,6 +35,7 @@
 			</div>
 		  </header>
 		</article>
+		{% endif %}
     {% if not loop.last %}
       <hr>
     {% endif %}
