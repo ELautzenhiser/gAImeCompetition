@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-{% if (g.user.get('privileges') >= 2) or (g.user.get('privileges') == -1) %}
+{% if g.user and ((g.user.get('privileges') >= 2) or (g.user.get('privileges') == -1)) %}
 	<p>Don't see the game you want to play? <a href="{{ url_for('upload.upload_game') }}">Upload it!</a>
 {% else %}
 	<p>Don't see the game you want to play? 
