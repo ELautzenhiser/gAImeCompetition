@@ -7,7 +7,7 @@ USE gaime;
 CREATE TABLE Users (
     username VARCHAR(30) UNIQUE NOT NULL,
     email VARCHAR(30) NOT NULL,
-    password VARCHAR(30) NOT NULL,
+    password VARCHAR(256) NOT NULL,
     privileges TINYINT NOT NULL DEFAULT 0,
     fname VARCHAR(30),
     lname VARCHAR(30),
