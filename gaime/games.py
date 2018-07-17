@@ -22,6 +22,13 @@ def get_games(username):
 
 @bp.route('/game_info/<int:game_id>', methods=('POST','GET'))
 def game_info(game_id):
+    game_query = 'SELECT g.author, g.name, g.created_dt, g.max_num_players, g.game_id, ' \
+                 'g.min_num_players, g.doc_file, u.username from Games g INNER JOIN Users u ' \
+                 'ON g.author=u.username WHERE g.game_id={0}'.format(game_id)
+    game = query_db(game_query, 1)
+    if not game:
+        flash("Error: That game doesn't exist")
+        return redirect(url_for('compete.index'))
     if g.user:
         username = g.user.get('username')
         players_query = 'SELECT up.upload_id, ' \
@@ -39,11 +46,7 @@ def game_info(game_id):
     else:
         username = None
         players = None
-    
-    game_query = 'SELECT g.author, g.name, g.created_dt, g.max_num_players, g.game_id, ' \
-                 'g.min_num_players, g.doc_file, u.username from Games g INNER JOIN Users u ' \
-                 'ON g.author=u.username WHERE g.game_id={0}'.format(game_id)
-    game = query_db(game_query, 1)
+
     doc_filename = GAME_PATH.format(game['game_id'],game['doc_file'])
     with open(doc_filename, 'r') as doc_file:
         game['documentation'] = doc_file.read()
@@ -90,6 +93,9 @@ def update_game(game_id, name, desc_filename, description, ref_filename, referee
 @bp.route('/game/<int:game_id>/edit', methods=('POST','GET'))
 def edit_game(game_id):
     game = get_db_row('Games', game_id)
+    if not game:
+        flash("Error: that game doesn't exist")
+        return redirect(url_for('compete.index'))
     if not (g.user and g.user['username']==game['author']):
         flash('You are not authorized to edit this game.')
         if game['status'] == 'Published':
@@ -158,6 +164,9 @@ def change_game_status(game_id,status):
 @bp.route('/game/<int:game_id>/retire', methods=('POST',))
 def retire_game(game_id):
     game = get_db_row('Games', game_id)
+    if not game:
+        flash("Error: that game doesn't exist")
+        return redirect(url_for('compete.index'))
     if not (g.user and g.user['username']==game['author']):
         flash('You are not authorized to retire this game.')
         if game['status'] == 'Published':
@@ -172,6 +181,9 @@ def retire_game(game_id):
 @bp.route('/game/<int:game_id>/publish', methods=('POST',))
 def publish_game(game_id):
     game = get_db_row('Games', game_id)
+    if not game:
+        flash("Error: that game doesn't exist")
+        return redirect(url_for('compete.index'))
     if not (g.user and g.user['username']==game['author']):
         flash('You are not authorized to publish this game.')
         if game['status'] == 'Published':

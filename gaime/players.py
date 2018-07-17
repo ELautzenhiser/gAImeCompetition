@@ -79,6 +79,9 @@ def change_player_status(upload_id,status):
 @bp.route('/player/<int:upload_id>/edit', methods=('POST','GET'))
 def edit_player(upload_id):
      player = get_db_row('Uploads', upload_id)
+     if not player:
+          flash("Error: that player doesn't exist!")
+          return redirect(url_for('compete.index'))
      if not (g.user and g.user['username']==player['author']):
           flash("You aren't authorized to edit that player!")
           return redirect(url_for('players.view_players',username=player['author']))
@@ -105,6 +108,9 @@ def edit_player(upload_id):
 @bp.route('/player/<int:upload_id>/retire', methods=('POST',))
 def retire_player(upload_id):
      player = get_db_row('Uploads', upload_id)
+     if not player:
+          flash("Error: that player doesn't exist!")
+          return redirect(url_for('compete.index'))
      if not (g.user and g.user['username']==player['author']):
           flash("You aren't authorized to retire that player!")
           return redirect(url_for('players.view_players',username=player['author']))
@@ -122,6 +128,9 @@ def retire_player(upload_id):
 @bp.route('/<int:upload_id>/publish', methods=('POST',))
 def publish_player(upload_id):
      player = get_db_row('Uploads', upload_id)
+     if not player:
+          flash("Error: that player doesn't exist!")
+          return redirect(url_for('compete.index'))
      if not (g.user and g.user['username']==player['author']):
           flash("You aren't authorized to publish that player!")
           return redirect(url_for('players.view_players',username=player['author']))
