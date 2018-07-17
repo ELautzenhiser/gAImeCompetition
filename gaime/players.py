@@ -79,6 +79,9 @@ def change_player_status(upload_id,status):
 @bp.route('/player/<int:upload_id>/edit', methods=('POST','GET'))
 def edit_player(upload_id):
      player = get_db_row('Uploads', upload_id)
+     if not (g.user and g.user['username']==player['author']):
+          flash("You aren't authorized to edit that player!")
+          return redirect(url_for('players.view_players',username=player['author']))
      filename = get_player_file(player['author'], player['filename'])
      if request.method == 'GET':
           player['name'] = get_player_name(player['filename'])
@@ -101,6 +104,10 @@ def edit_player(upload_id):
 
 @bp.route('/player/<int:upload_id>/retire', methods=('POST',))
 def retire_player(upload_id):
+     player = get_db_row('Uploads', upload_id)
+     if not (g.user and g.user['username']==player['author']):
+          flash("You aren't authorized to retire that player!")
+          return redirect(url_for('players.view_players',username=player['author']))
      success = change_player_status(upload_id,'Retired')
      if success:
           error = archive_player_file(upload_id)
@@ -114,6 +121,10 @@ def retire_player(upload_id):
 
 @bp.route('/<int:upload_id>/publish', methods=('POST',))
 def publish_player(upload_id):
+     player = get_db_row('Uploads', upload_id)
+     if not (g.user and g.user['username']==player['author']):
+          flash("You aren't authorized to publish that player!")
+          return redirect(url_for('players.view_players',username=player['author']))
      success = change_player_status(upload_id,'Published')
      if not success:
           flash('Could not publish player')

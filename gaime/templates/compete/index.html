@@ -14,7 +14,7 @@
 {% endif %}
   <h2>Available Games</h2>
   {% for game in games %}
-  <a class="game-link" href="{{ url_for('compete.game_info', game_id=game['game_id']) }}">
+  <a class="game-link" href="{{ url_for('games.game_info', game_id=game['game_id']) }}">
     <article class="game">
       <header>
         <div class="game-listing">

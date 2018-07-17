@@ -6,7 +6,6 @@ from .db import query_db, get_db_row
 import random
 
 bp = Blueprint('compete', __name__)
-GAME_PATH = 'UserSubmissions/Games/Game_{0}/{1}'
 
 @bp.route('/')
 def index():
@@ -21,47 +20,6 @@ def index():
                  'GROUP BY g.game_id ORDER BY g.game_id DESC '
     games = query_db(game_query, -1)
     return render_template('compete/index.html', games=games)
-
-@bp.route('/game_info/<int:game_id>', methods=('POST','GET'))
-def game_info(game_id):
-    if g.user:
-        username = g.user.get('username')
-        players_query = 'SELECT up.upload_id, ' \
-                        'SUBSTRING(up.filename, 16) as filename, ' \
-                        'up.created_dt, l.name as language, ' \
-                        'COALESCE(SUM(m.points),0) as score ' \
-                        'FROM Uploads up inner join Languages l ' \
-                        'ON up.language_id = l.language_id ' \
-                        'LEFT JOIN Match_players m ON up.upload_id=m.player_id ' \
-                        'WHERE up.author="{0}" AND up.status="Published" ' \
-                        'AND up.type=\'Player\' AND up.game_id={1} ' \
-                        'GROUP BY up.upload_id ' \
-                        'ORDER BY up.created_dt DESC'.format(username, game_id)
-        players = query_db(players_query)
-    else:
-        username = None
-        players = None
-    
-    game_query = 'SELECT g.author, g.name, g.created_dt, g.max_num_players, g.game_id, ' \
-                 'g.min_num_players, g.doc_file, u.username from Games g INNER JOIN Users u ' \
-                 'ON g.author=u.username WHERE g.game_id={0}'.format(game_id)
-    game = query_db(game_query, 1)
-    doc_filename = GAME_PATH.format(game['game_id'],game['doc_file'])
-    with open(doc_filename, 'r') as doc_file:
-        game['documentation'] = doc_file.read()
-
-    top_query = 'SELECT COALESCE(SUM(m.points),0) score, up.upload_id, u.username, ' \
-                'up.created_dt ' \
-                'FROM Uploads up INNER JOIN Users u on up.author=u.username ' \
-                'LEFT JOIN Match_players m on up.upload_id=m.player_id ' \
-                'WHERE up.type="Player" AND up.status="Published" ' \
-                'AND up.game_id={0} GROUP BY up.upload_id ' \
-                'ORDER BY score DESC limit 1'.format(game_id)
-    
-    top_player = query_db(top_query, 1)
-
-    return render_template('compete/game_info.html',game=game, players=players,
-                           top_player=top_player, username=username)
 
 def compete(challenger, challenged, ref, game_id):
     flash('This is a placeholder! Good fight!')
