@@ -5,17 +5,29 @@
 {% endblock %}
 
 {% block content %}
-	<form method='post'>
-		<label for='username'>Username</label>
-		<input name='username' id='username' required>
-		<label for='email'>Email Address</label>
-		<input name='email' id='email' required>
-		<label for='fname'>First Name</label>
-		<input name='fname' id='fname'>
-		<label for='lname'>Last Name</label>
-		<input name='lname' id='lname'>
-		<label for='password'>Password</label>
-		<input type='password' name='password' id='password' required>
-		<input type='submit' value='Register'>
-	</form>
+  <link rel="stylesheet" href="{{ url_for('static', filename='basicform.css') }}">
+
+  <form method='post'>
+    <div>
+      <label for='username'>Username</label>
+      <input name='username' id='username' required>
+    </div>
+    <div>
+      <label for='email'>Email Address</label>
+      <input name='email' id='email' required>
+    </div>
+    <div>
+      <label for='fname'>First Name</label>
+      <input name='fname' id='fname'>
+    </div>
+    <div>
+      <label for='lname'>Last Name</label>
+      <input name='lname' id='lname'>
+    </div>
+    <div>
+      <label for='password'>Password</label>
+      <input type='password' name='password' id='password' required>
+    </div>
+    <input type='submit' value='Register'>
+  </form>
 {% endblock %}
