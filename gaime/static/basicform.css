@@ -22,7 +22,7 @@ form input[type=submit] {
   padding: 0.7em;
   border: 0;
 }
-form button:hover {
+form input[type=submit]:hover {
   background: gold;
 }
 
